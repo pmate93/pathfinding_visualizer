@@ -1,26 +1,21 @@
 <template>
-    <table>
-        <tr>asd</tr>
-     </table>
+    <td></td>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-    name: "HomeView",
+    name: "TableCell",
     components: {},
     
-    data() {
-        return {
-
-        };
-    }
 });
 </script>
 
 <style>
-.asd {
-    background-color: aliceblue;
+td {
+    border: 1px solid black;
+    width: 25px;
+    height: 25px;
 }
 </style>
