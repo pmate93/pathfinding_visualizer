@@ -6,10 +6,28 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import AppHeader from "@/components/AppHeader.vue";
+import TABLE from "@/store/TableStore";
+import { mapActions, mapGetters } from "vuex";
 
 export default defineComponent({
     name: "App",
     components: { AppHeader },
+
+    computed: {
+        ...mapGetters(TABLE.NAMESPACE, {
+            getTable: TABLE.GETTERS.GET_TABLE,
+        })
+    },
+    methods: {
+        ...mapActions(TABLE.NAMESPACE, {
+            setTable: TABLE.ACTIONS.SET_TABLE,
+        })
+    },
+
+    created() {
+        this.setTable({rows: 35, cols: 50})
+        console.log(this.getTable);
+    }
 });
 </script>
 <style>
