@@ -9,6 +9,9 @@ import AppHeader from "@/components/AppHeader.vue";
 import TABLE from "@/store/TableStore";
 import { mapActions, mapGetters } from "vuex";
 
+const defaultRows = 35;
+const defaultCols = 50;
+
 export default defineComponent({
     name: "App",
     components: { AppHeader },
@@ -25,7 +28,7 @@ export default defineComponent({
     },
 
     created() {
-        this.setTable({rows: 35, cols: 50})
+        this.setTable({rows: defaultRows, cols: defaultCols})
         console.log(this.getTable);
     }
 });

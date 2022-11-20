@@ -1,15 +1,18 @@
 import { ActionContext, Module, MutationTree } from "vuex";
+import { getCellById, setCellsWithIds } from "./tableHelpers";
 import { ACTIONS, GETTERS, MUTATIONS } from "./TableStore.const";
-import { cellState, TableStoreGetters, TableStoreInnerState } from "./types";
+import { Cell, cellState, TableStoreGetters, TableStoreInnerState, TableStoreInjectedGetter } from "./types";
 
 const state: TableStoreInnerState = {
     table: [],
 };
 
 const getters: TableStoreGetters = {
-    [GETTERS.GET_TABLE](innerState: TableStoreInnerState): string[][] {
+    [GETTERS.GET_TABLE](innerState: TableStoreInnerState): Cell[][] {
         return innerState.table;
     },
+    [GETTERS.GET_CELL_BY_ID]: (innerState: TableStoreInnerState) => 
+        (cellId: number): Cell | null => getCellById(innerState.table, cellId)
 };
 
 const mutations: MutationTree<TableStoreInnerState> = {
@@ -17,7 +20,17 @@ const mutations: MutationTree<TableStoreInnerState> = {
         innerState: TableStoreInnerState,
         payload: { rows: number; cols: number }
     ): void {
-        innerState.table = Array(payload.rows).fill(Array(payload.cols).fill(cellState.EMPTY));
+        for (let i = 0; i < payload.rows; i++) {
+            innerState.table.push(Array(payload.cols));
+        }
+        setCellsWithIds(innerState.table);
+
+    },
+    [MUTATIONS.PUT_WALL](
+        innerState: TableStoreInnerState,
+        selectedCell: Cell,
+    ): void {
+        selectedCell.state = cellState.WALL;
     },
 };
 
@@ -27,6 +40,13 @@ const actions = {
         payload: { rows: number; cols: number }
     ): void {
         context.commit(MUTATIONS.SET_TABLE, { rows: payload.rows, cols: payload.cols });
+    },
+    [ACTIONS.PUT_WALL](
+        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
+        cellId: number,
+    ): void {
+        const getCellById: TableStoreInjectedGetter<GETTERS.GET_CELL_BY_ID> = context.getters[GETTERS.GET_CELL_BY_ID];
+        context.commit(MUTATIONS.PUT_WALL, getCellById(cellId));
     },
 };
 
