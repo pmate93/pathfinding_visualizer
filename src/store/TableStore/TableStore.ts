@@ -1,7 +1,7 @@
 import { ActionContext, Module, MutationTree } from "vuex";
 import { getCellById, setCellsWithIds } from "./tableHelpers";
 import { ACTIONS, GETTERS, MUTATIONS } from "./TableStore.const";
-import { Cell, cellState, TableStoreGetters, TableStoreInnerState, TableStoreInjectedGetter } from "./types";
+import { Cell, CellState, TableStoreGetters, TableStoreInnerState, TableStoreInjectedGetter, Mutations } from "./types";
 
 const state: TableStoreInnerState = {
     table: [],
@@ -15,7 +15,7 @@ const getters: TableStoreGetters = {
         (cellId: number): Cell | null => getCellById(innerState.table, cellId)
 };
 
-const mutations: MutationTree<TableStoreInnerState> = {
+const mutations: MutationTree<TableStoreInnerState> & Mutations = {
     [MUTATIONS.SET_TABLE](
         innerState: TableStoreInnerState,
         payload: { rows: number; cols: number }
@@ -24,13 +24,18 @@ const mutations: MutationTree<TableStoreInnerState> = {
             innerState.table.push(Array(payload.cols));
         }
         setCellsWithIds(innerState.table);
-
     },
     [MUTATIONS.PUT_WALL](
-        innerState: TableStoreInnerState,
+        innerState,
         selectedCell: Cell,
     ): void {
-        selectedCell.state = cellState.WALL;
+        selectedCell.state = CellState.WALL;
+    },
+    [MUTATIONS.REMOVE_WALL](
+        innerState,
+        selectedCell: Cell,
+    ): void {
+        selectedCell.state = CellState.EMPTY;    
     },
 };
 
@@ -41,12 +46,18 @@ const actions = {
     ): void {
         context.commit(MUTATIONS.SET_TABLE, { rows: payload.rows, cols: payload.cols });
     },
-    [ACTIONS.PUT_WALL](
+    [ACTIONS.CHANGE_WALL](
         context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
         cellId: number,
     ): void {
         const getCellById: TableStoreInjectedGetter<GETTERS.GET_CELL_BY_ID> = context.getters[GETTERS.GET_CELL_BY_ID];
-        context.commit(MUTATIONS.PUT_WALL, getCellById(cellId));
+        const selectedCell = getCellById(cellId);
+
+        if(selectedCell){
+            selectedCell.state === CellState.WALL ?
+            context.commit(MUTATIONS.REMOVE_WALL, selectedCell) :
+            context.commit(MUTATIONS.PUT_WALL, selectedCell);
+        }
     },
 };
 

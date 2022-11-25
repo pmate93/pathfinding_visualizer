@@ -13,7 +13,7 @@ const defaultRows = 35;
 const defaultCols = 50;
 
 export default defineComponent({
-    name: "App",
+    name: "app",
     components: { AppHeader },
 
     computed: {
@@ -28,7 +28,7 @@ export default defineComponent({
     },
 
     created() {
-        this.setTable({rows: defaultRows, cols: defaultCols})
+        this.setTable({rows: defaultRows, cols: defaultCols});
         console.log(this.getTable);
     }
 });

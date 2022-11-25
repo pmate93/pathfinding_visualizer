@@ -7,10 +7,11 @@ export enum GETTERS {
 
 export const ACTIONS = {
     SET_TABLE: 'setTable',
-    PUT_WALL: 'putWall',
-}
+    CHANGE_WALL: 'changeWall',
+};
 
-export const MUTATIONS = {
-    SET_TABLE: 'setTable',
-    PUT_WALL: 'putWall',
-}
+export enum MUTATIONS {
+    SET_TABLE = 'setTable',
+    PUT_WALL = 'putWall',
+    REMOVE_WALL = 'removeWall',
+};

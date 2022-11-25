@@ -6,4 +6,4 @@ export default {
     NAMESPACE,
     GETTERS,
     ACTIONS
-}
+};

@@ -1,4 +1,4 @@
-import { Cell, cellState } from "./types";
+import { Cell, CellState } from "./types";
 
 export function setCellsWithIds(table: Cell[][]): void {
     let uniqueId = 0;
@@ -6,8 +6,8 @@ export function setCellsWithIds(table: Cell[][]): void {
         for (let j = 0; j < table[i].length; j++) {
             table[i][j] = {
                 id: uniqueId++,
-                state: cellState.EMPTY,
-            }   
+                state: CellState.EMPTY,
+            };
         }
     }
 }

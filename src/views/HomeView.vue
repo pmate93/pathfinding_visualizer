@@ -1,7 +1,7 @@
 <template>
-<div class="table-container">
-  <table-field />
-</div>
+  <div class="table-container">
+    <table-field />
+  </div>
 </template>
 
 <script lang="ts">
@@ -9,10 +9,10 @@ import { defineComponent } from "vue";
 import TableField from "@/components/TableField.vue";
 
 export default defineComponent({
-  name: "HomeView",
-  components: {
-    TableField,
-  },
+    name: "home-view",
+    components: {
+        TableField,
+    },
 });
 </script>
 

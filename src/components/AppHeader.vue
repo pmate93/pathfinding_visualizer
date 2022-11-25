@@ -8,7 +8,7 @@
 import { defineComponent } from 'vue';
 
 export default defineComponent({
-    name: "AppHeader",
+    name: "app-header",
     components: {},
     
     data() {
