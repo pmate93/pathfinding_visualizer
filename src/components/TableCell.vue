@@ -1,6 +1,6 @@
 <template>
     <td>
-        <div :class="classes"></div>
+        <div :class="classes"/>
     </td>
 </template>
 

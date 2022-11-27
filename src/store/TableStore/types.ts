@@ -15,7 +15,7 @@ export type Mutations<S = TableStoreInnerState> = {
     [MUTATIONS.SET_TABLE](state: S, payload: { rows: number; cols: number }): void;
     [MUTATIONS.PUT_WALL](state: S, payload: Cell): void;
     [MUTATIONS.REMOVE_WALL](state: S, payload: Cell): void;
-  }
+}
 
 export type Cell = {
     id: number;

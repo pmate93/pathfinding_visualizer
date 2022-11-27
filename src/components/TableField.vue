@@ -1,15 +1,15 @@
 <template>
-    <table @click="setButtonPressed">
+    <table draggable="false" @click="setButtonPressed">
         <tr v-for="(row, index) in getTable" :key="index">
-            <table-cell 
-                v-for="(cell, index) in row" 
-                :key="index" 
+            <table-cell
+                v-for="(cell, index) in row"
+                :key="index"
                 :state="cell.state"
                 @mousedown="putWalltoTable(cell.id, true)"
                 @mouseover="putWalltoTable(cell.id)"
             />
         </tr>
-     </table>
+    </table>
 </template>
 
 <script lang="ts">
@@ -27,7 +27,7 @@ export default defineComponent({
             getTable: TABLE.GETTERS.GET_TABLE,
         })
     },
-    
+
     data() {
         return {
             isMouseButtonPressed: false,
@@ -41,11 +41,11 @@ export default defineComponent({
         }),
 
         putWalltoTable(cellId: number, mouseOver?: boolean): void {
-            if(mouseOver) {
+            if (mouseOver) {
                 this.isMouseButtonPressed = true;
             }
-            if(this.isMouseButtonPressed){
-                if(this.lastCellId !== cellId){
+            if (this.isMouseButtonPressed){
+                if (this.lastCellId !== cellId){
                     this.changeWall(cellId);
                 }
                 this.lastCellId = cellId;

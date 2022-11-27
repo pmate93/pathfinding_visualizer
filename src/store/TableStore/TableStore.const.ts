@@ -14,4 +14,4 @@ export enum MUTATIONS {
     SET_TABLE = 'setTable',
     PUT_WALL = 'putWall',
     REMOVE_WALL = 'removeWall',
-};
+}

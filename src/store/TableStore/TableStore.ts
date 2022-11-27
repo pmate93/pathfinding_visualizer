@@ -11,7 +11,7 @@ const getters: TableStoreGetters = {
     [GETTERS.GET_TABLE](innerState: TableStoreInnerState): Cell[][] {
         return innerState.table;
     },
-    [GETTERS.GET_CELL_BY_ID]: (innerState: TableStoreInnerState) => 
+    [GETTERS.GET_CELL_BY_ID]: (innerState: TableStoreInnerState) =>
         (cellId: number): Cell | null => getCellById(innerState.table, cellId)
 };
 
@@ -35,7 +35,7 @@ const mutations: MutationTree<TableStoreInnerState> & Mutations = {
         innerState,
         selectedCell: Cell,
     ): void {
-        selectedCell.state = CellState.EMPTY;    
+        selectedCell.state = CellState.EMPTY;
     },
 };
 
@@ -53,10 +53,10 @@ const actions = {
         const getCellById: TableStoreInjectedGetter<GETTERS.GET_CELL_BY_ID> = context.getters[GETTERS.GET_CELL_BY_ID];
         const selectedCell = getCellById(cellId);
 
-        if(selectedCell){
+        if (selectedCell){
             selectedCell.state === CellState.WALL ?
-            context.commit(MUTATIONS.REMOVE_WALL, selectedCell) :
-            context.commit(MUTATIONS.PUT_WALL, selectedCell);
+                context.commit(MUTATIONS.REMOVE_WALL, selectedCell) :
+                context.commit(MUTATIONS.PUT_WALL, selectedCell);
         }
     },
 };
