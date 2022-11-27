@@ -1,5 +1,5 @@
 <template>
-    <table draggable="false" @click="setButtonPressed">
+    <table @click="setButtonPressed">
         <tr v-for="(row, index) in getTable" :key="index">
             <table-cell
                 v-for="(cell, index) in row"
