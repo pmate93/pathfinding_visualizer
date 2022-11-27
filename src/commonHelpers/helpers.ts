@@ -1,4 +1,3 @@
-
 export function filterTwoDArray<T>(arr: T[][], predicateFn: (element: T) => boolean): T[] {
     const returnArr = [];
     for (let i = 0; i < arr.length; i++) {

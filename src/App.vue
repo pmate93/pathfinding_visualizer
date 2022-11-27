@@ -24,11 +24,13 @@ export default defineComponent({
     methods: {
         ...mapActions(TABLE.NAMESPACE, {
             setTable: TABLE.ACTIONS.SET_TABLE,
+            setStartingCell: TABLE.ACTIONS.SET_STARTING_CELL,
         })
     },
 
     created() {
         this.setTable({rows: defaultRows, cols: defaultCols});
+        this.setStartingCell({rowIdx: 17, colIdx: 10});
         console.log(this.getTable);
     }
 });

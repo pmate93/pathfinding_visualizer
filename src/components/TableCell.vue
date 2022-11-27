@@ -33,6 +33,15 @@ export default defineComponent({
     background-color: black;
 }
 
+.start {
+    border: solid rgb(4, 187, 74);
+    border-width: 0 4px 4px 0;
+    padding: 5px;
+    margin-left: 2px;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+}
+
 td {
     border: 1px solid black;
     min-width: 25px;
