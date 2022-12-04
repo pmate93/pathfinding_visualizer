@@ -11,10 +11,13 @@ const getters: TableStoreGetters = {
     [GETTERS.GET_TABLE](innerState: TableStoreInnerState): Cell[][] {
         return innerState.table;
     },
+
     [GETTERS.GET_CELL_BY_ID]: (innerState: TableStoreInnerState) =>
         (cellId: number): Cell | null => getCellById(innerState.table, cellId),
+
     [GETTERS.GET_STARTING_CELL]: (innerState: TableStoreInnerState) =>
         (): Cell | null => getFirstCellByState(innerState.table, CellState.START),
+
     [GETTERS.GET_CELL_BY_INDEX]: (innerState: TableStoreInnerState) =>
         (rowIdx: number, colIdx: number): Cell | null => {
             if (innerState.table.length > rowIdx && innerState.table[rowIdx].length > colIdx){

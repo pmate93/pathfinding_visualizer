@@ -46,7 +46,7 @@ export default defineComponent({
                 this.isMouseButtonPressed = true;
             }
             if (this.isMouseButtonPressed){
-                if (this.lastIndexes !== newIndexes){
+                if (JSON.stringify(this.lastIndexes) !== JSON.stringify(newIndexes)){
                     this.changeWall(newIndexes);
                 }
                 this.lastIndexes = newIndexes;
