@@ -1,12 +1,12 @@
 <template>
     <table @click="setButtonPressed">
-        <tr v-for="(row, index) in getTable" :key="index">
+        <tr v-for="(row, rowIdx) in getTable" :key="rowIdx">
             <table-cell
-                v-for="(cell, index) in row"
-                :key="index"
+                v-for="(cell, colIdx) in row"
+                :key="colIdx"
                 :state="cell.state"
-                @mousedown="putWalltoTable(cell.id, true)"
-                @mouseover="putWalltoTable(cell.id)"
+                @mousedown="putWalltoTable({ rowIdx, colIdx }, true)"
+                @mouseover="putWalltoTable({ rowIdx, colIdx })"
             />
         </tr>
     </table>
@@ -17,6 +17,7 @@ import { defineComponent } from 'vue';
 import TableCell from "@/components/TableCell.vue";
 import { mapActions, mapGetters } from 'vuex';
 import TABLE from "@/store/TableStore";
+import { TableIndexes } from '@/store/TableStore/types';
 
 export default defineComponent({
     name: "home-view",
@@ -31,7 +32,7 @@ export default defineComponent({
     data() {
         return {
             isMouseButtonPressed: false,
-            lastCellId: null as number | null,
+            lastIndexes: null as TableIndexes | null,
         };
     },
 
@@ -40,20 +41,20 @@ export default defineComponent({
             changeWall: TABLE.ACTIONS.CHANGE_WALL,
         }),
 
-        putWalltoTable(cellId: number, mouseOver?: boolean): void {
+        putWalltoTable(newIndexes: TableIndexes, mouseOver?: boolean): void {
             if (mouseOver) {
                 this.isMouseButtonPressed = true;
             }
             if (this.isMouseButtonPressed){
-                if (this.lastCellId !== cellId){
-                    this.changeWall(cellId);
+                if (this.lastIndexes !== newIndexes){
+                    this.changeWall(newIndexes);
                 }
-                this.lastCellId = cellId;
+                this.lastIndexes = newIndexes;
             }
         },
         setButtonPressed(): void {
             this.isMouseButtonPressed = false;
-            this.lastCellId = null;
+            this.lastIndexes = null;
         }
     }
 });

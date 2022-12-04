@@ -4,6 +4,7 @@ export enum GETTERS {
     GET_TABLE = 'getTable',
     GET_CELL_BY_ID = 'getCellById',
     GET_STARTING_CELL = 'getStartingCell',
+    GET_CELL_BY_INDEX = 'getCellByIndex',
 }
 
 export const ACTIONS = {

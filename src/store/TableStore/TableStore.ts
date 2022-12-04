@@ -1,7 +1,7 @@
 import { ActionContext, Module, MutationTree } from "vuex";
-import { getCellById, getFirstCellByState, isStartCellSelected, setCellsWithIds } from "./tableHelpers";
+import { getCellById, getFirstCellByState, setCellsWithIds } from "./tableHelpers";
 import { ACTIONS, GETTERS, MUTATIONS } from "./TableStore.const";
-import { Cell, CellState, TableStoreGetters, TableStoreInnerState, TableStoreInjectedGetter, Mutations } from "./types";
+import { Cell, CellState, TableStoreGetters, TableStoreInnerState, TableStoreInjectedGetter, Mutations, TableIndexes } from "./types";
 
 const state: TableStoreInnerState = {
     table: [],
@@ -15,6 +15,13 @@ const getters: TableStoreGetters = {
         (cellId: number): Cell | null => getCellById(innerState.table, cellId),
     [GETTERS.GET_STARTING_CELL]: (innerState: TableStoreInnerState) =>
         (): Cell | null => getFirstCellByState(innerState.table, CellState.START),
+    [GETTERS.GET_CELL_BY_INDEX]: (innerState: TableStoreInnerState) =>
+        (rowIdx: number, colIdx: number): Cell | null => {
+            if (innerState.table.length > rowIdx && innerState.table[rowIdx].length > colIdx){
+                return innerState.table[rowIdx][colIdx];
+            }
+            return null;
+        }
 };
 
 const mutations: MutationTree<TableStoreInnerState> & Mutations = {
@@ -29,21 +36,21 @@ const mutations: MutationTree<TableStoreInnerState> & Mutations = {
     },
     [MUTATIONS.SET_STARTING_CELL](
         innerState,
-        payload: { rowIdx: number, colIdx:number },
+        payload: TableIndexes,
     ): void {
         innerState.table[payload.rowIdx][payload.colIdx].state = CellState.START;
     },
     [MUTATIONS.PUT_WALL](
         innerState,
-        selectedCell: Cell,
+        payload: TableIndexes,
     ): void {
-        selectedCell.state = CellState.WALL;
+        innerState.table[payload.rowIdx][payload.colIdx].state = CellState.WALL;
     },
     [MUTATIONS.REMOVE_WALL](
         innerState,
-        selectedCell: Cell,
+        payload: TableIndexes,
     ): void {
-        selectedCell.state = CellState.EMPTY;
+        innerState.table[payload.rowIdx][payload.colIdx].state = CellState.EMPTY;
     },
 };
 
@@ -56,21 +63,22 @@ const actions = {
     },
     [ACTIONS.SET_STARTING_CELL](
         context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: { rowIdx: number; colIdx: number }
+        payload: TableIndexes,
     ): void {
         context.commit(MUTATIONS.SET_STARTING_CELL, { rowIdx: payload.rowIdx, colIdx: payload.colIdx });
     },
     [ACTIONS.CHANGE_WALL](
         context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        cellId: number,
+        payload: TableIndexes,
     ): void {
-        const getCellById: TableStoreInjectedGetter<GETTERS.GET_CELL_BY_ID> = context.getters[GETTERS.GET_CELL_BY_ID];
-        const selectedCell = getCellById(cellId);
+        const getCellByIndex: TableStoreInjectedGetter<GETTERS.GET_CELL_BY_INDEX> = context.getters[GETTERS.GET_CELL_BY_INDEX];
+        const selectedCell = getCellByIndex(payload.rowIdx, payload.colIdx);
 
-        if (selectedCell && !isStartCellSelected(selectedCell)){
-            selectedCell.state === CellState.WALL ?
-                context.commit(MUTATIONS.REMOVE_WALL, selectedCell) :
-                context.commit(MUTATIONS.PUT_WALL, selectedCell);
+        if (selectedCell?.state !== CellState.START){
+            const tableIndexes = { rowIdx: payload.rowIdx, colIdx: payload.colIdx };
+            selectedCell?.state === CellState.WALL ?
+                context.commit(MUTATIONS.REMOVE_WALL, tableIndexes) :
+                context.commit(MUTATIONS.PUT_WALL, tableIndexes);
         }
     },
 };

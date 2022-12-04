@@ -31,7 +31,6 @@ export default defineComponent({
     created() {
         this.setTable({rows: defaultRows, cols: defaultCols});
         this.setStartingCell({rowIdx: 17, colIdx: 10});
-        console.log(this.getTable);
     }
 });
 </script>
