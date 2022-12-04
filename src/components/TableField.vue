@@ -17,7 +17,7 @@ import { defineComponent } from 'vue';
 import TableCell from "@/components/TableCell.vue";
 import { mapActions, mapGetters } from 'vuex';
 import TABLE from "@/store/TableStore";
-import { TableIndexes } from '@/store/TableStore/types';
+import { CellState, TableIndexes } from '@/store/TableStore/types';
 
 export default defineComponent({
     name: "home-view",
@@ -26,12 +26,14 @@ export default defineComponent({
     computed: {
         ...mapGetters(TABLE.NAMESPACE, {
             getTable: TABLE.GETTERS.GET_TABLE,
+            getCellByIndex: TABLE.GETTERS.GET_CELL_BY_INDEX,
         })
     },
 
     data() {
         return {
             isMouseButtonPressed: false,
+            isStartCellDragged: false,
             lastIndexes: null as TableIndexes | null,
         };
     },
@@ -39,14 +41,24 @@ export default defineComponent({
     methods: {
         ...mapActions(TABLE.NAMESPACE, {
             changeWall: TABLE.ACTIONS.CHANGE_WALL,
+            moveStartCell: TABLE.ACTIONS.MOVE_STARTING_CELL,
         }),
 
         putWalltoTable(newIndexes: TableIndexes, mouseOver?: boolean): void {
             if (mouseOver) {
                 this.isMouseButtonPressed = true;
+                if (this.getCellByIndex(newIndexes.rowIdx, newIndexes.colIdx)?.state === CellState.START) {
+                    this.isStartCellDragged = true;
+                }
             }
-            if (this.isMouseButtonPressed){
-                if (JSON.stringify(this.lastIndexes) !== JSON.stringify(newIndexes)){
+            if (this.isStartCellDragged){
+                if (!this.isSameCellHovered(newIndexes)) {
+                    this.moveStartCell(newIndexes);
+                }
+                this.lastIndexes = newIndexes;
+            }
+            else if (this.isMouseButtonPressed){
+                if (!this.isSameCellHovered(newIndexes)) {
                     this.changeWall(newIndexes);
                 }
                 this.lastIndexes = newIndexes;
@@ -54,7 +66,11 @@ export default defineComponent({
         },
         setButtonPressed(): void {
             this.isMouseButtonPressed = false;
+            this.isStartCellDragged = false;
             this.lastIndexes = null;
+        },
+        isSameCellHovered(newIndexes: TableIndexes): boolean {
+            return JSON.stringify(this.lastIndexes) === JSON.stringify(newIndexes);
         }
     }
 });

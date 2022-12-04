@@ -11,6 +11,7 @@ export const ACTIONS = {
     SET_TABLE: 'setTable',
     CHANGE_WALL: 'changeWall',
     SET_STARTING_CELL: 'setStartingCell',
+    MOVE_STARTING_CELL: 'moveStartingCell',
 };
 
 export enum MUTATIONS {

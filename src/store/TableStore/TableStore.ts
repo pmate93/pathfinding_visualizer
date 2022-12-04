@@ -84,6 +84,18 @@ const actions = {
                 context.commit(MUTATIONS.PUT_WALL, tableIndexes);
         }
     },
+    [ACTIONS.MOVE_STARTING_CELL](
+        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
+        payload: TableIndexes,
+    ): void {
+        const getStartCell: TableStoreInjectedGetter<GETTERS.GET_STARTING_CELL> = context.getters[GETTERS.GET_STARTING_CELL];
+        const startCell = getStartCell();
+
+        if (startCell){
+            startCell.state = CellState.EMPTY;
+            context.dispatch(ACTIONS.SET_STARTING_CELL, payload);
+        }
+    },
 };
 
 export const tableStore: Module<TableStoreInnerState, TableStoreInnerState> = {
