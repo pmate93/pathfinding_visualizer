@@ -20,7 +20,7 @@ import TABLE from "@/store/TableStore";
 import { CellState, TableIndexes } from '@/store/TableStore/types';
 
 export default defineComponent({
-    name: "home-view",
+    name: "table-field",
     components: { TableCell },
 
     computed: {
@@ -45,14 +45,16 @@ export default defineComponent({
         }),
 
         putWalltoTable(newIndexes: TableIndexes, mouseOver?: boolean): void {
+            const newCell = this.getCellByIndex(newIndexes.rowIdx, newIndexes.colIdx);
+
             if (mouseOver) {
                 this.isMouseButtonPressed = true;
-                if (this.getCellByIndex(newIndexes.rowIdx, newIndexes.colIdx)?.state === CellState.START) {
+                if (newCell?.state === CellState.START) {
                     this.isStartCellDragged = true;
                 }
             }
             if (this.isStartCellDragged){
-                if (!this.isSameCellHovered(newIndexes)) {
+                if (!this.isSameCellHovered(newIndexes) && newCell?.state !== CellState.WALL) {
                     this.moveStartCell(newIndexes);
                 }
                 this.lastIndexes = newIndexes;
