@@ -42,6 +42,13 @@ export default defineComponent({
     -webkit-transform: rotate(-45deg);
 }
 
+.end {
+    border: solid rgb(25, 53, 212);
+    border-width: 5px;
+    padding: 5px;
+    border-radius: 20px;
+}
+
 td {
     border: 1px solid black;
     min-width: 25px;

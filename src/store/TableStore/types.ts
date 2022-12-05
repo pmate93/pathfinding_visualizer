@@ -13,6 +13,7 @@ export type TableStoreGetters = {
     [GETTERS.GET_TABLE]: (innerState: TableStoreInnerState) => Cell[][];
     [GETTERS.GET_CELL_BY_ID]: (innerState: TableStoreInnerState) => (cellId: number) => Cell | null;
     [GETTERS.GET_STARTING_CELL]: (innerState: TableStoreInnerState) => () => Cell | null;
+    [GETTERS.GET_END_CELL]: (innerState: TableStoreInnerState) => () => Cell | null;
     [GETTERS.GET_CELL_BY_INDEX]: (innerState: TableStoreInnerState) => (rowIdx: number, colIdx: number) => Cell | null;
 }
 
@@ -23,6 +24,7 @@ export type Mutations<S = TableStoreInnerState> = {
     [MUTATIONS.PUT_WALL](state: S, payload: TableIndexes): void;
     [MUTATIONS.REMOVE_WALL](state: S, payload: TableIndexes): void;
     [MUTATIONS.SET_STARTING_CELL](state: S, payload: TableIndexes): void;
+    [MUTATIONS.SET_END_CELL](state: S, payload: TableIndexes): void;
 }
 
 export type Cell = {
@@ -34,4 +36,5 @@ export enum CellState {
     EMPTY = 'empty',
     WALL = 'wall',
     START = 'start',
+    END = 'end',
 }

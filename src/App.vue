@@ -25,12 +25,14 @@ export default defineComponent({
         ...mapActions(TABLE.NAMESPACE, {
             setTable: TABLE.ACTIONS.SET_TABLE,
             setStartingCell: TABLE.ACTIONS.SET_STARTING_CELL,
+            setEndCell: TABLE.ACTIONS.SET_END_CELL,
         })
     },
 
     created() {
-        this.setTable({rows: defaultRows, cols: defaultCols});
-        this.setStartingCell({rowIdx: 17, colIdx: 10});
+        this.setTable({ rows: defaultRows, cols: defaultCols });
+        this.setStartingCell({ rowIdx: 17, colIdx: 10 });
+        this.setEndCell({ rowIdx: 17, colIdx: 40 });
     }
 });
 </script>
