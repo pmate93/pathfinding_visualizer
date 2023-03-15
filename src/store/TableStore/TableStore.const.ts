@@ -6,6 +6,7 @@ export enum GETTERS {
     GET_STARTING_CELL = 'getStartingCell',
     GET_END_CELL = 'getEndCell',
     GET_CELL_BY_INDEX = 'getCellByIndex',
+    GET_SHORTEST_PATH_WITH_DJIKSTRA = 'getShortestPathWithDjikstra',
 }
 
 export const ACTIONS = {

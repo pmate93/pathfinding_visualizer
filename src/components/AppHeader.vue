@@ -1,11 +1,16 @@
 <template>
     <nav>
         Pathfinding Visualizer
+        <button @click="start">
+            start
+        </button>
     </nav>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import { mapGetters } from 'vuex';
+import TABLE from "@/store/TableStore";
 
 export default defineComponent({
     name: "app-header",
@@ -14,6 +19,19 @@ export default defineComponent({
     data() {
         return {
         };
+    },
+    computed: {
+        ...mapGetters(TABLE.NAMESPACE, {
+            getShortestPathWithDjikstra: TABLE.GETTERS.GET_SHORTEST_PATH_WITH_DJIKSTRA,
+            getStartCell: TABLE.GETTERS.GET_STARTING_CELL,
+            getEndCell: TABLE.GETTERS.GET_END_CELL,
+        })
+    },
+
+    methods: {
+        start(): void {
+            this.getShortestPathWithDjikstra(this.getStartCell().id, this.getEndCell().id);
+        }
     }
 });
 </script>

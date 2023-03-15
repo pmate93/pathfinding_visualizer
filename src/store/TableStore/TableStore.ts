@@ -1,7 +1,8 @@
 import { ActionContext, Module, MutationTree } from "vuex";
-import { getCellById, getFirstCellByState, setCellsWithIds } from "./tableHelpers";
+import { getCellById, getCellIndexesById, getFirstCellByState, setCellsWithIds } from "./tableHelpers";
 import { ACTIONS, GETTERS, MUTATIONS } from "./TableStore.const";
 import { Cell, CellState, TableStoreGetters, TableStoreInnerState, TableStoreInjectedGetter, Mutations, TableIndexes } from "./types";
+import { dijkstra } from "../../commonHelpers/helpers";
 
 const state: TableStoreInnerState = {
     table: [],
@@ -27,7 +28,28 @@ const getters: TableStoreGetters = {
                 return innerState.table[rowIdx][colIdx];
             }
             return null;
-        }
+        },
+    [GETTERS.GET_SHORTEST_PATH_WITH_DJIKSTRA]: (innerState: TableStoreInnerState) =>
+        (startCellId: number, endCellId: number): Cell[] => {
+
+            const arr: number[][] = [];
+            for (let i = 0; i < 35; i++) {
+                arr.push([]);
+                for (let j = 0; j < 50; j++) {
+                    arr[i].push(1);
+                }
+            }
+            const startCell = getCellIndexesById(innerState.table, startCellId);
+            const endCell = getCellIndexesById(innerState.table, endCellId);
+            console.log(startCell, endCell, 'asd');
+            console.log(endCell, 'endCell');
+            if (startCell && endCell){
+                const result = dijkstra(innerState.table, startCell, endCell);
+                console.log(result, 'result');
+            }
+
+            return [innerState.table[0][0]];
+        },
 };
 
 const mutations: MutationTree<TableStoreInnerState> & Mutations = {

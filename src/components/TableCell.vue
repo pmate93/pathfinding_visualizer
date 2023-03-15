@@ -33,6 +33,12 @@ export default defineComponent({
     background-color: black;
 }
 
+.visited {
+    width: 25px;
+    height: 25px;
+    background-color: rgb(75, 134, 243);
+}
+
 .start {
     border: solid rgb(4, 187, 74);
     border-width: 0 4px 4px 0;

@@ -9,8 +9,8 @@ import AppHeader from "@/components/AppHeader.vue";
 import TABLE from "@/store/TableStore";
 import { mapActions, mapGetters } from "vuex";
 
-const defaultRows = 35;
-const defaultCols = 50;
+const defaultRows = 10;
+const defaultCols = 10;
 
 export default defineComponent({
     name: "app",
@@ -31,8 +31,8 @@ export default defineComponent({
 
     created() {
         this.setTable({ rows: defaultRows, cols: defaultCols });
-        this.setStartingCell({ rowIdx: 17, colIdx: 10 });
-        this.setEndCell({ rowIdx: 17, colIdx: 40 });
+        this.setStartingCell({ rowIdx: 2, colIdx: 2 });
+        this.setEndCell({ rowIdx: 4, colIdx: 4 });
     }
 });
 </script>

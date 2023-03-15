@@ -15,6 +15,7 @@ export type TableStoreGetters = {
     [GETTERS.GET_STARTING_CELL]: (innerState: TableStoreInnerState) => () => Cell | null;
     [GETTERS.GET_END_CELL]: (innerState: TableStoreInnerState) => () => Cell | null;
     [GETTERS.GET_CELL_BY_INDEX]: (innerState: TableStoreInnerState) => (rowIdx: number, colIdx: number) => Cell | null;
+    [GETTERS.GET_SHORTEST_PATH_WITH_DJIKSTRA]: (innerState: TableStoreInnerState) => (startCellId: number, endCellId: number) => Cell[];
 }
 
 export type TableStoreInjectedGetter<T extends GETTERS> = ReturnType<TableStoreGetters[T]>;
@@ -37,4 +38,5 @@ export enum CellState {
     WALL = 'wall',
     START = 'start',
     END = 'end',
+    VISITED = 'visited',
 }
