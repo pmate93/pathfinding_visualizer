@@ -42,9 +42,9 @@ export function dijkstra(grid: Cell[][], start: TableIndexes, end: TableIndexes)
     }
 
     while (queue.length > 0) {
-        const current = queue.pop()!;
+        const current = queue.pop();
 
-        if (!visited[getKey(current)]) {
+        if (current && !visited[getKey(current)]) {
             visited[getKey(current)] = true;
             visitOrder.push(current);
 
