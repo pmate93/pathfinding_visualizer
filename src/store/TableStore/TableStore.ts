@@ -12,7 +12,6 @@ const getters: TableStoreGetters = {
     [GETTERS.GET_TABLE](innerState: TableStoreInnerState): Cell[][] {
         return innerState.table;
     },
-
     [GETTERS.GET_CELL_BY_ID]: (innerState: TableStoreInnerState) =>
         (cellId: number): Cell | null => getCellById(innerState.table, cellId),
 
