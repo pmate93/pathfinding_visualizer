@@ -5,8 +5,8 @@
                 v-for="(cell, colIdx) in row"
                 :key="colIdx"
                 :state="cell.state"
-                @mousedown="putWalltoTable({ rowIdx, colIdx }, true)"
-                @mouseover="putWalltoTable({ rowIdx, colIdx })"
+                @mousedown="putWallToTable({ rowIdx, colIdx }, true)"
+                @mouseover="putWallToTable({ rowIdx, colIdx })"
             />
         </tr>
     </table>
@@ -46,7 +46,7 @@ export default defineComponent({
             moveEndCell: TABLE.ACTIONS.MOVE_END_CELL,
         }),
 
-        putWalltoTable(newIndexes: TableIndexes, mouseOver?: boolean): void {
+        putWallToTable(newIndexes: TableIndexes, mouseOver?: boolean): void {
             const newCell = this.getCellByIndex(newIndexes.rowIdx, newIndexes.colIdx);
 
             if (mouseOver) {

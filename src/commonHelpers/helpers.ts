@@ -28,10 +28,13 @@ export function dijkstra(grid: Cell[][], start: TableIndexes, end: TableIndexes)
         for (let j = 0; j < grid[i].length; j++) {
             const cell: TableIndexes = { rowIdx: i, colIdx: j };
             const key = getKey(cell);
-            distances[key] = Infinity;
-            predecessors[key] = null;
             visited[key] = false;
-            if (i === start.rowIdx && j === start.colIdx) {
+            predecessors[key] = null;
+            distances[key] = 1;
+            if (grid[i][j].state === CellState.WALL) {
+                visited[key] = true;
+            }
+            else if (i === start.rowIdx && j === start.colIdx) {
                 distances[key] = 0;
                 queue.unshift(cell);
             }
@@ -49,7 +52,7 @@ export function dijkstra(grid: Cell[][], start: TableIndexes, end: TableIndexes)
             for (const neighbor of neighbors) {
                 const key = getKey(neighbor);
                 if (!visited[key]) {
-                    const newDistance = distances[getKey(current)] + /* grid[neighbor.rowIdx][neighbor.colIdx] */ 1; // weighting
+                    const newDistance = distances[getKey(current)]; // weighting?
                     if (newDistance < distances[key]) {
                         distances[key] = newDistance;
                         predecessors[key] = current;
