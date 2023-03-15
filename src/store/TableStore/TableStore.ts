@@ -29,26 +29,16 @@ const getters: TableStoreGetters = {
             }
             return null;
         },
-    [GETTERS.GET_SHORTEST_PATH_WITH_DJIKSTRA]: (innerState: TableStoreInnerState) =>
-        (startCellId: number, endCellId: number): Cell[] => {
-
-            const arr: number[][] = [];
-            for (let i = 0; i < 35; i++) {
-                arr.push([]);
-                for (let j = 0; j < 50; j++) {
-                    arr[i].push(1);
-                }
-            }
+    [GETTERS.GET_SHORTEST_PATH_WITH_DIJKSTRA]: (innerState: TableStoreInnerState) =>
+        (startCellId: number, endCellId: number): { path: TableIndexes[]; visitOrder: TableIndexes[]; } | null => {
             const startCell = getCellIndexesById(innerState.table, startCellId);
             const endCell = getCellIndexesById(innerState.table, endCellId);
-            console.log(startCell, endCell, 'asd');
-            console.log(endCell, 'endCell');
+
             if (startCell && endCell){
-                const result = dijkstra(innerState.table, startCell, endCell);
-                console.log(result, 'result');
+                return dijkstra(innerState.table, startCell, endCell);
             }
 
-            return [innerState.table[0][0]];
+            return null;
         },
 };
 
@@ -85,6 +75,12 @@ const mutations: MutationTree<TableStoreInnerState> & Mutations = {
         payload: TableIndexes,
     ): void {
         innerState.table[payload.rowIdx][payload.colIdx].state = CellState.EMPTY;
+    },
+    [MUTATIONS.SET_CELL_VISITED](
+        innerState,
+        payload: TableIndexes,
+    ): void {
+        innerState.table[payload.rowIdx][payload.colIdx].state = CellState.VISITED;
     },
 };
 
@@ -147,6 +143,27 @@ const actions = {
         if (endCell){
             endCell.state = CellState.EMPTY;
             context.dispatch(ACTIONS.SET_END_CELL, payload);
+        }
+    },
+    [ACTIONS.VISUALIZE_DIJKSTRA](
+        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
+        payload: { startCellId: number, endCellId: number },
+    ): void {
+        const getShortestPathWithDijkstra: TableStoreInjectedGetter<GETTERS.GET_SHORTEST_PATH_WITH_DIJKSTRA> = context.getters[GETTERS.GET_SHORTEST_PATH_WITH_DIJKSTRA];
+        const result = getShortestPathWithDijkstra(payload.startCellId, payload.endCellId);
+
+        function visualizeVisitOrder(visitOrder: TableIndexes[]): void {
+            setTimeout(() => {
+                const currentCell = visitOrder.pop();
+                context.commit(MUTATIONS.SET_CELL_VISITED, currentCell);
+
+                if (visitOrder.length > 0) visualizeVisitOrder(visitOrder);
+            }, 10);
+        }
+
+        if (result) {
+            const { path, visitOrder } = result;
+            visualizeVisitOrder(visitOrder.reverse());
         }
     },
 };

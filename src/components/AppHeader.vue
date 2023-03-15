@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 import TABLE from "@/store/TableStore";
 
 export default defineComponent({
@@ -22,15 +22,18 @@ export default defineComponent({
     },
     computed: {
         ...mapGetters(TABLE.NAMESPACE, {
-            getShortestPathWithDjikstra: TABLE.GETTERS.GET_SHORTEST_PATH_WITH_DJIKSTRA,
             getStartCell: TABLE.GETTERS.GET_STARTING_CELL,
             getEndCell: TABLE.GETTERS.GET_END_CELL,
         })
     },
 
     methods: {
+        ...mapActions(TABLE.NAMESPACE, {
+            visualizeDijkstra: TABLE.ACTIONS.VISUALIZE_DIJKSTRA,
+        }),
+
         start(): void {
-            this.getShortestPathWithDjikstra(this.getStartCell().id, this.getEndCell().id);
+            this.visualizeDijkstra({ startCellId: this.getStartCell().id, endCellId: this.getEndCell().id });
         }
     }
 });

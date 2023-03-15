@@ -14,12 +14,12 @@ export function filterTwoDArray<T>(arr: T[][], predicateFn: (element: T) => bool
 
 type Predecessor = { [key: string]: TableIndexes | null };
 
-export function dijkstra(grid: Cell[][], start: TableIndexes, end: TableIndexes): TableIndexes[] | null {
-    console.log(grid, 'grid');
+export function dijkstra(grid: Cell[][], start: TableIndexes, end: TableIndexes): { path: TableIndexes[], visitOrder: TableIndexes[] } | null {
     const visited: { [key: string]: boolean } = {};
     const distances: { [key: string]: number } = {};
     const predecessors: Predecessor = {};
     const queue: TableIndexes[] = [];
+    const visitOrder: TableIndexes[] = [];
 
     const getKey = ({ rowIdx, colIdx }: TableIndexes) => `${rowIdx},${colIdx}`;
 
@@ -40,24 +40,26 @@ export function dijkstra(grid: Cell[][], start: TableIndexes, end: TableIndexes)
 
     while (queue.length > 0) {
         const current = queue.pop()!;
-        visited[getKey(current)] = true;
-        setTimeout(() => {
-            grid[current.rowIdx][current.colIdx].state = CellState.VISITED;
-        }, 500);
-        const neighbors = getNeighbors(current, grid);
-        for (const neighbor of neighbors) {
-            const key = getKey(neighbor);
-            if (!visited[key]) {
-                const newDistance = distances[getKey(current)] + /* grid[neighbor.rowIdx][neighbor.colIdx] */ 1; // weighting
-                if (newDistance < distances[key]) {
-                    distances[key] = newDistance;
-                    predecessors[key] = current;
-                    if (neighbor.rowIdx === end.rowIdx && neighbor.colIdx === end.colIdx) {
-                        return getPath(predecessors, start, end);
+
+        if (!visited[getKey(current)]) {
+            visited[getKey(current)] = true;
+            visitOrder.push(current);
+
+            const neighbors = getNeighbors(current, grid);
+            for (const neighbor of neighbors) {
+                const key = getKey(neighbor);
+                if (!visited[key]) {
+                    const newDistance = distances[getKey(current)] + /* grid[neighbor.rowIdx][neighbor.colIdx] */ 1; // weighting
+                    if (newDistance < distances[key]) {
+                        distances[key] = newDistance;
+                        predecessors[key] = current;
+                        if (neighbor.rowIdx === end.rowIdx && neighbor.colIdx === end.colIdx) {
+                            return { path: getPath(predecessors, start, end), visitOrder };
+                        }
                     }
-                }
-                if (!queue.includes(neighbor)) {
-                    queue.unshift(neighbor);
+                    if (!queue.includes(neighbor)) {
+                        queue.unshift(neighbor);
+                    }
                 }
             }
         }

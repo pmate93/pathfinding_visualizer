@@ -6,7 +6,7 @@ export enum GETTERS {
     GET_STARTING_CELL = 'getStartingCell',
     GET_END_CELL = 'getEndCell',
     GET_CELL_BY_INDEX = 'getCellByIndex',
-    GET_SHORTEST_PATH_WITH_DJIKSTRA = 'getShortestPathWithDjikstra',
+    GET_SHORTEST_PATH_WITH_DIJKSTRA = 'getShortestPathWithDijkstra',
 }
 
 export const ACTIONS = {
@@ -16,6 +16,7 @@ export const ACTIONS = {
     MOVE_STARTING_CELL: 'moveStartingCell',
     MOVE_END_CELL: 'moveEndCell',
     SET_END_CELL: 'setEndCell',
+    VISUALIZE_DIJKSTRA: 'visualizeDijkstra',
 };
 
 export enum MUTATIONS {
@@ -24,4 +25,5 @@ export enum MUTATIONS {
     REMOVE_WALL = 'removeWall',
     SET_STARTING_CELL = 'setStartingCell',
     SET_END_CELL = 'setEndCell',
+    SET_CELL_VISITED = 'setCellVisited',
 }
