@@ -17,6 +17,7 @@ export const ACTIONS = {
     MOVE_END_CELL: 'moveEndCell',
     SET_END_CELL: 'setEndCell',
     VISUALIZE_DIJKSTRA: 'visualizeDijkstra',
+    VISUALIZE_PATH_AND_VISIT_ORDER: 'visualizePathAndVisitOrder',
 };
 
 export enum MUTATIONS {
@@ -26,4 +27,5 @@ export enum MUTATIONS {
     SET_STARTING_CELL = 'setStartingCell',
     SET_END_CELL = 'setEndCell',
     SET_CELL_VISITED = 'setCellVisited',
+    SET_PATH = 'setPath',
 }

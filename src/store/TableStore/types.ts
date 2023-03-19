@@ -26,6 +26,7 @@ export type Mutations<S = TableStoreInnerState> = {
     [MUTATIONS.REMOVE_WALL](state: S, payload: TableIndexes): void;
     [MUTATIONS.SET_STARTING_CELL](state: S, payload: TableIndexes): void;
     [MUTATIONS.SET_END_CELL](state: S, payload: TableIndexes): void;
+    [MUTATIONS.SET_PATH](state: S, payload: TableIndexes): void;
 }
 
 export type Cell = {
@@ -39,4 +40,5 @@ export enum CellState {
     START = 'start',
     END = 'end',
     VISITED = 'visited',
+    PATH = 'path',
 }
