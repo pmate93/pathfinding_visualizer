@@ -151,7 +151,7 @@ const actions = {
             uniqueId = idFromLastElement + 1;
         }
 
-        while (borderStyles.length && borderStyles.filter(element => element.style === randomBorderStyle)) {
+        while (borderStyles.length && borderStyles.filter(element => element.style === randomBorderStyle).length) {
             randomBorderStyle = getRandomBorderStyle();
         }
 
@@ -183,7 +183,7 @@ const actions = {
         const getStartCell: TableStoreInjectedGetter<GETTERS.GET_STARTING_CELL> = context.getters[GETTERS.GET_STARTING_CELL];
         const startCell = getStartCell();
 
-        if (startCell){
+        if (startCell) {
             startCell.state = CellState.EMPTY;
             context.dispatch(ACTIONS.SET_STARTING_CELL, payload);
         }
@@ -199,7 +199,7 @@ const actions = {
         const getWaypointCellById: TableStoreInjectedGetter<GETTERS.GET_CELL_BY_ID> = context.getters[GETTERS.GET_CELL_BY_ID];
         const waypointCell = getWaypointCellById(payload.cellId);
 
-        if (waypointCell){
+        if (waypointCell) {
             waypointCell.state = CellState.EMPTY;
             context.commit(MUTATIONS.SET_WAYPOINT, { ...payload, borderStyleId: waypointCell.borderStyleId });
             delete waypointCell.borderStyleId;
@@ -212,7 +212,7 @@ const actions = {
         const getEndCell: TableStoreInjectedGetter<GETTERS.GET_END_CELL> = context.getters[GETTERS.GET_END_CELL];
         const endCell = getEndCell();
 
-        if (endCell){
+        if (endCell) {
             endCell.state = CellState.EMPTY;
             context.dispatch(ACTIONS.SET_END_CELL, payload);
         }
