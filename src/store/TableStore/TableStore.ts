@@ -1,11 +1,13 @@
 import { ActionContext, Module, MutationTree } from "vuex";
-import { getCellById, getCellIndexesById, getFirstCellByState, setCellsWithIds } from "./tableHelpers";
+import { getCellById, getCellIndexesById, getFirstCellByState, getRandomBorderStyle, setCellsWithIds } from "./tableHelpers";
 import { ACTIONS, GETTERS, MUTATIONS } from "./TableStore.const";
-import { Cell, CellState, TableStoreGetters, TableStoreInnerState, TableStoreInjectedGetter, Mutations, TableIndexes } from "./types";
+import { Cell, CellState, TableStoreGetters, TableStoreInnerState, TableStoreInjectedGetter, Mutations, TableIndexes, BorderStyle } from "./types";
 import { dijkstra } from "../../commonHelpers/helpers";
 
 const state: TableStoreInnerState = {
     table: [],
+    hasWaypoint: false,
+    borderStyles: [],
 };
 
 const getters: TableStoreGetters = {
@@ -17,6 +19,9 @@ const getters: TableStoreGetters = {
 
     [GETTERS.GET_STARTING_CELL]: (innerState: TableStoreInnerState) =>
         (): Cell | null => getFirstCellByState(innerState.table, CellState.START),
+
+    [GETTERS.GET_WAYPOINT]: (innerState: TableStoreInnerState) =>
+        (): Cell | null => getFirstCellByState(innerState.table, CellState.WAYPOINT),
 
     [GETTERS.GET_END_CELL]: (innerState: TableStoreInnerState) =>
         (): Cell | null => getFirstCellByState(innerState.table, CellState.END),
@@ -39,6 +44,8 @@ const getters: TableStoreGetters = {
 
             return null;
         },
+    [GETTERS.HAS_WAYPOINT]: (innerState: TableStoreInnerState) => innerState.hasWaypoint,
+    [GETTERS.GET_BORDER_STYLES]: (innerState: TableStoreInnerState) => innerState.borderStyles,
 };
 
 const mutations: MutationTree<TableStoreInnerState> & Mutations = {
@@ -91,6 +98,25 @@ const mutations: MutationTree<TableStoreInnerState> & Mutations = {
             innerState.table[payload.rowIdx][payload.colIdx].state = CellState.PATH;
         }
     },
+    [MUTATIONS.SET_WAYPOINT](
+        innerState,
+        payload: {
+            rowIdx: number;
+            colIdx: number;
+            borderStyleId: number;
+        },
+    ): void {
+        if (innerState.table[payload.rowIdx][payload.colIdx].state !== CellState.START && !innerState.hasWaypoint) {
+            innerState.table[payload.rowIdx][payload.colIdx].state = CellState.WAYPOINT;
+            innerState.table[payload.rowIdx][payload.colIdx].borderStyleId = payload.borderStyleId;
+        }
+    },
+    [MUTATIONS.ADD_BORDER_STYLE](
+        innerState,
+        payload: BorderStyle,
+    ): void {
+        innerState.borderStyles.push(payload);
+    },
 };
 
 const actions = {
@@ -111,6 +137,26 @@ const actions = {
         payload: TableIndexes,
     ): void {
         context.commit(MUTATIONS.SET_END_CELL, { rowIdx: payload.rowIdx, colIdx: payload.colIdx });
+    },
+    [ACTIONS.SET_WAYPOINT](
+        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
+        payload: TableIndexes,
+    ): void {
+        const borderStyles: TableStoreInjectedGetter<GETTERS.GET_BORDER_STYLES> = context.getters[GETTERS.GET_BORDER_STYLES];
+
+        let uniqueId = 0;
+        let randomBorderStyle = getRandomBorderStyle();
+        if (borderStyles.length) {
+            const idFromLastElement = borderStyles[borderStyles.length - 1].id;
+            uniqueId = idFromLastElement + 1;
+        }
+
+        while (borderStyles.length && borderStyles.filter(element => element.style === randomBorderStyle)) {
+            randomBorderStyle = getRandomBorderStyle();
+        }
+
+        context.commit(MUTATIONS.ADD_BORDER_STYLE, { id: uniqueId, style: randomBorderStyle });
+        context.commit(MUTATIONS.SET_WAYPOINT, { rowIdx: payload.rowIdx, colIdx: payload.colIdx, borderStyleId: uniqueId });
     },
     [ACTIONS.CHANGE_WALL](
         context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
@@ -140,6 +186,23 @@ const actions = {
         if (startCell){
             startCell.state = CellState.EMPTY;
             context.dispatch(ACTIONS.SET_STARTING_CELL, payload);
+        }
+    },
+    [ACTIONS.MOVE_WAYPOINT_CELL](
+        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
+        payload: {
+            rowIdx: number;
+            colIdx: number;
+            cellId: number;
+        },
+    ): void {
+        const getWaypointCellById: TableStoreInjectedGetter<GETTERS.GET_CELL_BY_ID> = context.getters[GETTERS.GET_CELL_BY_ID];
+        const waypointCell = getWaypointCellById(payload.cellId);
+
+        if (waypointCell){
+            waypointCell.state = CellState.EMPTY;
+            context.commit(MUTATIONS.SET_WAYPOINT, { ...payload, borderStyleId: waypointCell.borderStyleId });
+            delete waypointCell.borderStyleId;
         }
     },
     [ACTIONS.MOVE_END_CELL](

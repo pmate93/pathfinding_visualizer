@@ -4,6 +4,9 @@
         <button @click="start">
             start
         </button>
+        <button @click="addWaypoint">
+            Add waypoint
+        </button>
     </nav>
 </template>
 
@@ -14,26 +17,26 @@ import TABLE from "@/store/TableStore";
 
 export default defineComponent({
     name: "app-header",
-    components: {},
 
-    data() {
-        return {
-        };
-    },
     computed: {
         ...mapGetters(TABLE.NAMESPACE, {
             getStartCell: TABLE.GETTERS.GET_STARTING_CELL,
             getEndCell: TABLE.GETTERS.GET_END_CELL,
+            hasWaypoint: TABLE.GETTERS.HAS_WAYPOINT,
         })
     },
 
     methods: {
         ...mapActions(TABLE.NAMESPACE, {
             visualizeDijkstra: TABLE.ACTIONS.VISUALIZE_DIJKSTRA,
+            setWaypoint: TABLE.ACTIONS.SET_WAYPOINT,
         }),
 
         start(): void {
             this.visualizeDijkstra({ startCellId: this.getStartCell().id, endCellId: this.getEndCell().id });
+        },
+        addWaypoint(): void {
+            this.setWaypoint({ rowIdx: 25, colIdx: 25 });
         }
     }
 });

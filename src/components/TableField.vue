@@ -4,9 +4,9 @@
             <table-cell
                 v-for="(cell, colIdx) in row"
                 :key="colIdx"
-                :state="cell.state"
-                @mousedown="putWallToTable({ rowIdx, colIdx }, true)"
-                @mouseover="putWallToTable({ rowIdx, colIdx })"
+                :cell="cell"
+                @mousedown="handleCellClick(cell.id, { rowIdx, colIdx }, true)"
+                @mouseover="handleCellClick(cell.id, { rowIdx, colIdx })"
             />
         </tr>
     </table>
@@ -35,7 +35,9 @@ export default defineComponent({
             isMouseButtonPressed: false,
             isStartCellDragged: false,
             isEndCellDragged: false,
+            isWaypointDragged: false,
             lastIndexes: null as TableIndexes | null,
+            selectedCellId: -1,
         };
     },
 
@@ -43,13 +45,15 @@ export default defineComponent({
         ...mapActions(TABLE.NAMESPACE, {
             changeWall: TABLE.ACTIONS.CHANGE_WALL,
             moveStartCell: TABLE.ACTIONS.MOVE_STARTING_CELL,
+            moveWaypointCell: TABLE.ACTIONS.MOVE_WAYPOINT_CELL,
             moveEndCell: TABLE.ACTIONS.MOVE_END_CELL,
         }),
 
-        putWallToTable(newIndexes: TableIndexes, mouseOver?: boolean): void {
+        handleCellClick(cellId: number, newIndexes: TableIndexes, mouseOver?: boolean): void {
             const newCell = this.getCellByIndex(newIndexes.rowIdx, newIndexes.colIdx);
 
             if (mouseOver) {
+                this.selectedCellId = cellId;
                 this.isMouseButtonPressed = true;
                 if (newCell?.state === CellState.START) {
                     this.isStartCellDragged = true;
@@ -57,10 +61,21 @@ export default defineComponent({
                 else if (newCell?.state === CellState.END) {
                     this.isEndCellDragged = true;
                 }
+                else if (newCell?.state === CellState.WAYPOINT) {
+                    this.isWaypointDragged = true;
+                }
             }
+
             if (this.isStartCellDragged){
                 if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell)) {
                     this.moveStartCell(newIndexes);
+                }
+                this.lastIndexes = newIndexes;
+            }
+            else if (this.isWaypointDragged){
+                if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell)) {
+                    this.moveWaypointCell({ ...newIndexes, cellId: this.selectedCellId });
+                    this.selectedCellId = cellId;
                 }
                 this.lastIndexes = newIndexes;
             }
@@ -80,6 +95,7 @@ export default defineComponent({
         setButtonPressed(): void {
             this.isMouseButtonPressed = false;
             this.isStartCellDragged = false;
+            this.isWaypointDragged = false;
             this.isEndCellDragged = false;
             this.lastIndexes = null;
         },

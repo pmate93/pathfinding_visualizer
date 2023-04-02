@@ -1,27 +1,42 @@
 <template>
     <td>
-        <div :class="classes"/>
+        <div :class="classes" :style="borderStyle" />
     </td>
 </template>
 
 <script lang="ts">
-import { CellState } from '@/store/TableStore/types';
+import { BorderStyle, Cell, CellState } from '@/store/TableStore/types';
 import { defineComponent, PropType } from 'vue';
+import { mapGetters } from 'vuex';
+import TABLE from "@/store/TableStore";
 
 export default defineComponent({
     name: "table-cell",
     components: {},
     props: {
-        state: {
-            type: String as PropType<CellState>,
+        cell: {
+            type: Object as PropType<Cell>,
             required: true,
-            default: CellState.EMPTY,
         }
     },
     computed: {
-        classes(): string {
-            return this.state;
+        ...mapGetters(TABLE.NAMESPACE, {
+            getBorderStyles: TABLE.GETTERS.GET_BORDER_STYLES,
+        }),
+        classes(): CellState {
+            return this.cell.state;
         },
+        isWaypoint(): boolean {
+            return this.cell.state === CellState.WAYPOINT;
+        },
+        borderStyle(): string {
+            const style: BorderStyle[] = this.getBorderStyles.filter((element: BorderStyle) => element.id === this.cell.borderStyleId);
+
+            if (style.length) {
+                return style[0].style;
+            }
+            return '';
+        }
     },
 });
 </script>
@@ -76,5 +91,10 @@ div {
     margin: auto;
     background-color: white;
     transition: background-color 0.5s, width 0.5s, height 0.5s;
+}
+
+.waypoint {
+    padding: 5px;
+    border-radius: 20px;
 }
 </style>
