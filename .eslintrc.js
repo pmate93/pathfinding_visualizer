@@ -22,6 +22,20 @@ module.exports = {
         'vue/comment-directive': 'error',
         "semi": [2, "always"],
         'vue/html-indent': ['error', 4],
+        "indent": ["error", 4, {
+            "SwitchCase": 1,
+            "VariableDeclarator": 1,
+            "outerIIFEBody": 1,
+            "FunctionDeclaration": {"parameters": "first"},
+            "FunctionExpression": {"parameters": "first"},
+            "CallExpression": {"arguments": "first"},
+            "ArrayExpression": "first",
+            "ObjectExpression": "first",
+            "ImportDeclaration": "first",
+            "flatTernaryExpressions": false,
+            "ignoreComments": false,
+            "ignoredNodes": ["TemplateLiteral *"]
+        }],
         'vue/max-attributes-per-line': ['error', {
             "singleline": {
                 'max': 3
