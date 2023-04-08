@@ -1,4 +1,5 @@
 <template>
+    <h1>{{ userStore.users[0].userName }}</h1>
     <app-header />
     <router-view />
 </template>
@@ -8,6 +9,7 @@ import { defineComponent } from "vue";
 import AppHeader from "@/components/AppHeader.vue";
 import TABLE from "@/store/TableStore";
 import { mapActions, mapGetters } from "vuex";
+import { useUserStore } from '@/store/UserStore/UserStore';
 
 const defaultRows = 35;
 const defaultCols = 50;
@@ -33,6 +35,15 @@ export default defineComponent({
         this.setTable({ rows: defaultRows, cols: defaultCols });
         this.setStartingCell({ rowIdx: 2, colIdx: 2 });
         this.setEndCell({ rowIdx: 4, colIdx: 4 });
+    },
+
+    setup() {
+        const userStore = useUserStore();
+
+        console.log(userStore.favs);
+        return {
+            userStore
+        };
     }
 });
 </script>
