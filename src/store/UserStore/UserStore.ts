@@ -20,6 +20,11 @@ export const useUserStore = defineStore({
             return this.users.filter((u: User) => u.isFav);
         },
     },
+    actions: {
+        ['increment'](amount = 1) {
+            this.users.splice(1);
+        },
+    }
 });
 
 export type UserStore = ReturnType<typeof useUserStore>;
