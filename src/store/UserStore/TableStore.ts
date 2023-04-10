@@ -1,20 +1,8 @@
-import { defineStore, ActionContext } from 'pinia';
+import { defineStore } from 'pinia';
 import { ACTIONS, GETTERS, NAMESPACE } from './TableStore.const';
 import { Cell, CellState, TableIndexes, TableStoreInnerState } from './types';
 import { getCellById, getCellIndexesById, getFirstCellByState, getRandomBorderStyle, setCellsWithIds } from './tableHelpers';
 import { dijkstra } from '@/commonHelpers/helpers';
-
-interface MyStore {
-    myAction(arg1: string, arg2: number): Promise<boolean>;
-  }
-  
-  type MyActionContext = ActionContext<MyStore>;
-  
-  import { PayloadWithType } from 'pinia';
-  
-  type MyActionPayload = PayloadWithType<MyStore['myAction']>;
-  
-  type MyAction = (payload: MyActionPayload) => Promise<boolean>;
 
 export const useTableStore = defineStore({
     id: NAMESPACE,
@@ -63,9 +51,7 @@ export const useTableStore = defineStore({
         [GETTERS.GET_BORDER_STYLES]: (state: TableStoreInnerState) => state.borderStyles,
     },
     actions: {
-        [ACTIONS.SET_TABLE](
-            rows: number, cols: number
-        ): void {
+        [ACTIONS.SET_TABLE](rows: number, cols: number): void {
             for (let i = 0; i < rows; i++) {
                 this.table.push(Array(cols));
             }

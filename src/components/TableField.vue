@@ -15,16 +15,17 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import TableCell from "@/components/TableCell.vue";
-import { mapActions, mapGetters } from 'vuex';
-import TABLE from "@/store/TableStore";
+import { mapActions, mapGetters } from 'pinia';
+import TABLE from "@/store/UserStore";
 import { Cell, CellState, TableIndexes } from '@/store/TableStore/types';
+import { useTableStore } from '@/store/UserStore/TableStore';
 
 export default defineComponent({
     name: "table-field",
     components: { TableCell },
 
     computed: {
-        ...mapGetters(TABLE.NAMESPACE, {
+        ...mapGetters(useTableStore, {
             getTable: TABLE.GETTERS.GET_TABLE,
             getCellByIndex: TABLE.GETTERS.GET_CELL_BY_INDEX,
         })
@@ -42,7 +43,7 @@ export default defineComponent({
     },
 
     methods: {
-        ...mapActions(TABLE.NAMESPACE, {
+        ...mapActions(useTableStore, {
             changeWall: TABLE.ACTIONS.CHANGE_WALL,
             moveStartCell: TABLE.ACTIONS.MOVE_STARTING_CELL,
             moveWaypointCell: TABLE.ACTIONS.MOVE_WAYPOINT_CELL,
@@ -67,20 +68,20 @@ export default defineComponent({
             }
 
             if (this.isStartCellDragged){
-                if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell)) {
+                if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell!)) {
                     this.moveStartCell(newIndexes);
                 }
                 this.lastIndexes = newIndexes;
             }
             else if (this.isWaypointDragged){
-                if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell)) {
+                if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell!)) {
                     this.moveWaypointCell({ ...newIndexes, cellId: this.selectedCellId });
                     this.selectedCellId = cellId;
                 }
                 this.lastIndexes = newIndexes;
             }
             else if (this.isEndCellDragged){
-                if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell)) {
+                if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell!)) {
                     this.moveEndCell(newIndexes);
                 }
                 this.lastIndexes = newIndexes;

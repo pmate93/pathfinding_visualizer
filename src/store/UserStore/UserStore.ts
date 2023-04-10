@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { ACTIONS } from './TableStore.const';
 
 export type User = {
     id: number;
@@ -21,7 +22,10 @@ export const useUserStore = defineStore({
         },
     },
     actions: {
-        ['increment'](amount = 1) {
+        [ACTIONS.SET_TABLE](amount = 1) {
+            this.users.splice(1);
+        },
+        ['yoyo'](amount = 1) {
             this.users.splice(1);
         },
     }

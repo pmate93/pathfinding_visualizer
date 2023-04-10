@@ -6,11 +6,9 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import AppHeader from "@/components/AppHeader.vue";
-import TABLE from "@/store/TableStore";
-//import { mapActions, mapGetters } from "vuex";
+import TABLE from "@/store/UserStore";
 import { useTableStore } from '@/store/UserStore/TableStore';
-import { mapState, mapActions, mapGetters } from 'pinia';
-import { useUserStore } from "./store/UserStore/UserStore";
+import { mapActions, mapGetters } from 'pinia';
 
 const defaultRows = 35;
 const defaultCols = 50;
@@ -33,17 +31,16 @@ export default defineComponent({
     },
 
     created() {
-        console.log(this.setTable);
-        type asd = ReturnType<typeof this.setTable>;
-        this.setTable(defaultRows as any, defaultCols as any);
-        this.setTable(30, 30);
-        console.log(this.getTable, 'favsfavs');
-        //this.setStartingCell({ rowIdx: 2, colIdx: 2 });
-        //this.setEndCell({ rowIdx: 4, colIdx: 4 });
+        this.setTable(defaultRows, defaultCols);
+        this.setStartingCell({ rowIdx: 2, colIdx: 2 });
+        this.setEndCell({ rowIdx: 4, colIdx: 4 });
     },
 
     /* setup() {
         const userStore = useUserStore();
+        const TableStore = useTableStore();
+        TableStore.setTable(1, 1);
+
         console.log(userStore.favs);
 
         return {

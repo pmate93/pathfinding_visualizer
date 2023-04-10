@@ -7,8 +7,9 @@
 <script lang="ts">
 import { BorderStyle, Cell, CellState } from '@/store/TableStore/types';
 import { defineComponent, PropType } from 'vue';
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'pinia';
 import TABLE from "@/store/TableStore";
+import { useTableStore } from '@/store/UserStore/TableStore';
 
 export default defineComponent({
     name: "table-cell",
@@ -20,7 +21,7 @@ export default defineComponent({
         }
     },
     computed: {
-        ...mapGetters(TABLE.NAMESPACE, {
+        ...mapGetters(useTableStore, {
             getBorderStyles: TABLE.GETTERS.GET_BORDER_STYLES,
         }),
         classes(): CellState {
@@ -30,7 +31,8 @@ export default defineComponent({
             return this.cell.state === CellState.WAYPOINT;
         },
         borderStyle(): string {
-            const style: BorderStyle[] = this.getBorderStyles.filter((element: BorderStyle) => element.id === this.cell.borderStyleId);
+            //@ts-ignore
+            const style = this.getBorderStyles.filter((element: BorderStyle) => element.id === this.cell.borderStyleId);
 
             if (style.length) {
                 return style[0].style;

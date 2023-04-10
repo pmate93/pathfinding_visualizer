@@ -12,14 +12,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { mapGetters, mapActions } from 'vuex';
-import TABLE from "@/store/TableStore";
+import { mapGetters, mapActions } from 'pinia';
+import TABLE from "@/store/UserStore";
+import { useTableStore } from '@/store/UserStore/TableStore';
 
 export default defineComponent({
     name: "app-header",
 
     computed: {
-        ...mapGetters(TABLE.NAMESPACE, {
+        ...mapGetters(useTableStore, {
             getStartCell: TABLE.GETTERS.GET_STARTING_CELL,
             getEndCell: TABLE.GETTERS.GET_END_CELL,
             hasWaypoint: TABLE.GETTERS.HAS_WAYPOINT,
@@ -27,13 +28,18 @@ export default defineComponent({
     },
 
     methods: {
-        ...mapActions(TABLE.NAMESPACE, {
+        ...mapActions(useTableStore, {
             visualizeDijkstra: TABLE.ACTIONS.VISUALIZE_DIJKSTRA,
             setWaypoint: TABLE.ACTIONS.SET_WAYPOINT,
         }),
 
         start(): void {
-            this.visualizeDijkstra({ startCellId: this.getStartCell().id, endCellId: this.getEndCell().id });
+            const startCellId = this.getStartCell()?.id;
+            const endCellId = this.getEndCell()?.id;
+            if (startCellId && endCellId){
+                this.visualizeDijkstra({ startCellId, endCellId });
+
+            }
         },
         addWaypoint(): void {
             this.setWaypoint({ rowIdx: 25, colIdx: 25 });
