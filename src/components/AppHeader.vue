@@ -1,22 +1,21 @@
 <template>
     <nav>
         Pathfinding Visualizer
-        <button @click="start">
-            start
-        </button>
-        <button @click="addWaypoint">
-            Add waypoint
-        </button>
+        <header-button label="Start" @click="start" />
+        <header-button label="Add waypoint" @click="addWaypoint" />
+        <header-button label="Reset" @click="$emit('OnReset')" />
     </nav>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapGetters, mapActions } from 'pinia';
-import TABLE from "@/store/UserStore";
+import TABLE from '@/store/UserStore';
 import { useTableStore } from '@/store/UserStore/TableStore';
+import HeaderButton from './HeaderButton.vue';
 
 export default defineComponent({
+    components: { HeaderButton },
     name: "app-header",
 
     computed: {
@@ -43,7 +42,7 @@ export default defineComponent({
         },
         addWaypoint(): void {
             this.setWaypoint({ rowIdx: 25, colIdx: 25 });
-        }
+        },
     }
 });
 </script>

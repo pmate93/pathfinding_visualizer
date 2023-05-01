@@ -52,6 +52,7 @@ export const useTableStore = defineStore({
     },
     actions: {
         [ACTIONS.SET_TABLE](rows: number, cols: number): void {
+            this.table = [];
             for (let i = 0; i < rows; i++) {
                 this.table.push(Array(cols));
             }
@@ -83,10 +84,10 @@ export const useTableStore = defineStore({
                 randomBorderStyle = getRandomBorderStyle();
             }
 
-            //context.commit(MUTATIONS.ADD_BORDER_STYLE, { id: uniqueId, style: randomBorderStyle });
             this.borderStyles.push({ id: uniqueId, style: randomBorderStyle });
             //context.commit(MUTATIONS.SET_WAYPOINT, { rowIdx: payload.rowIdx, colIdx: payload.colIdx, borderStyleId: uniqueId });
 
+            // set waypoint
             if (this.table[payload.rowIdx][payload.colIdx].state !== CellState.START && !this.hasWaypoint) {
                 this.table[payload.rowIdx][payload.colIdx].state = CellState.WAYPOINT;
                 this.table[payload.rowIdx][payload.colIdx].borderStyleId = uniqueId;
@@ -157,7 +158,7 @@ export const useTableStore = defineStore({
                 if (table[currentCell.rowIdx][currentCell.colIdx].state !== CellState.START) {
                     table[currentCell.rowIdx][currentCell.colIdx].state = CellState.VISITED;
                 }
-                await new Promise((resolve) => setTimeout(resolve, 10));
+                await new Promise((resolve) => setTimeout(resolve, 5));
 
                 return visualizeVisitOrder(visitOrder, table);
             }
@@ -181,8 +182,7 @@ export const useTableStore = defineStore({
             const result = this.getShortestPathWithDijkstra(payload.startCellId, payload.endCellId);
 
             if (result) {
-                //context.dispatch(ACTIONS.VISUALIZE_PATH_AND_VISIT_ORDER, result);
-                this.visualizePathAndVisitOrder(result.path as any, result.visitOrder as any);
+                this.visualizePathAndVisitOrder(result.path, result.visitOrder);
             }
         },
     }

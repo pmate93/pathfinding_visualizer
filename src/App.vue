@@ -1,5 +1,5 @@
 <template>
-    <app-header />
+    <app-header @on-reset="setInitialState" />
     <router-view />
 </template>
 
@@ -14,7 +14,7 @@ const defaultRows = 35;
 const defaultCols = 50;
 
 export default defineComponent({
-    name: "app",
+    name: 'app',
     components: { AppHeader },
 
     computed: {
@@ -27,26 +27,19 @@ export default defineComponent({
             setTable: TABLE.ACTIONS.SET_TABLE,
             setStartingCell: TABLE.ACTIONS.SET_STARTING_CELL,
             setEndCell: TABLE.ACTIONS.SET_END_CELL,
-        })
+        }),
+
+        setInitialState(): void {
+            console.log('reset');
+            this.setTable(defaultRows, defaultCols);
+            this.setStartingCell({ rowIdx: 20, colIdx: 20 });
+            this.setEndCell({ rowIdx: 30, colIdx: 30 });
+        }
     },
 
     created() {
-        this.setTable(defaultRows, defaultCols);
-        this.setStartingCell({ rowIdx: 2, colIdx: 2 });
-        this.setEndCell({ rowIdx: 4, colIdx: 4 });
+        this.setInitialState();
     },
-
-    /* setup() {
-        const userStore = useUserStore();
-        const TableStore = useTableStore();
-        TableStore.setTable(1, 1);
-
-        console.log(userStore.favs);
-
-        return {
-            userStore
-        };
-    } */
 });
 </script>
 <style>
