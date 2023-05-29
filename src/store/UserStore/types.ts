@@ -7,7 +7,7 @@ export type TableIndexes = {
 
 export type TableStoreInnerState = {
     table: Cell[][];
-    hasWaypoint: false;
+    hasWaypoint: boolean;
     borderStyles: BorderStyle[];
 };
 

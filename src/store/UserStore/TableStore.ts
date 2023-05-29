@@ -3,6 +3,7 @@ import { ACTIONS, GETTERS, NAMESPACE } from './TableStore.const';
 import { Cell, CellState, TableIndexes, TableStoreInnerState } from './types';
 import { getCellById, getCellIndexesById, getFirstCellByState, getRandomBorderStyle, setCellsWithIds } from './tableHelpers';
 import { dijkstra } from '@/commonHelpers/helpers';
+import { useUtilityStore } from '../UtilityStore';
 
 export const useTableStore = defineStore({
     id: NAMESPACE,
@@ -85,7 +86,6 @@ export const useTableStore = defineStore({
             }
 
             this.borderStyles.push({ id: uniqueId, style: randomBorderStyle });
-            //context.commit(MUTATIONS.SET_WAYPOINT, { rowIdx: payload.rowIdx, colIdx: payload.colIdx, borderStyleId: uniqueId });
 
             // set waypoint
             if (this.table[payload.rowIdx][payload.colIdx].state !== CellState.START && !this.hasWaypoint) {
@@ -149,13 +149,17 @@ export const useTableStore = defineStore({
         async [ACTIONS.VISUALIZE_PATH_AND_VISIT_ORDER](
             path: TableIndexes[], visitOrder: TableIndexes[],
         ): Promise<void> {
-            async function visualizeVisitOrder(visitOrder: TableIndexes[], table: Cell[][]): Promise<void> {
+            const utilityStore = useUtilityStore();
+            async function visualizeVisitOrder(visitOrder: TableIndexes[], table: Cell[][]): Promise<boolean> {
+                if (utilityStore.getIsResetPressed) {
+                    return false;
+                }
                 if (visitOrder.length === 0) {
-                    return Promise.resolve();
+                    return true;
                 }
 
-                const currentCell = visitOrder.pop()!;
-                if (table[currentCell.rowIdx][currentCell.colIdx].state !== CellState.START) {
+                const currentCell = visitOrder.pop();
+                if (currentCell && table[currentCell.rowIdx][currentCell.colIdx].state !== CellState.START) {
                     table[currentCell.rowIdx][currentCell.colIdx].state = CellState.VISITED;
                 }
                 await new Promise((resolve) => setTimeout(resolve, 5));
@@ -164,8 +168,12 @@ export const useTableStore = defineStore({
             }
             function visualizePath(path: TableIndexes[], table: Cell[][]): void {
                 setTimeout(() => {
-                    const currentCell = path.pop()!;
-                    if (table[currentCell.rowIdx][currentCell.colIdx].state !== CellState.START) {
+                    if (utilityStore.getIsResetPressed) {
+                        return;
+                    }
+
+                    const currentCell = path.pop();
+                    if (currentCell && table[currentCell.rowIdx][currentCell.colIdx].state !== CellState.START) {
                         table[currentCell.rowIdx][currentCell.colIdx].state = CellState.PATH;
                     }
 
@@ -173,8 +181,10 @@ export const useTableStore = defineStore({
                 }, 10);
             }
 
-            await visualizeVisitOrder(visitOrder.reverse(), this.table);
-            visualizePath(path.reverse(), this.table);
+            const isResetNotPressed = await visualizeVisitOrder(visitOrder.reverse(), this.table);
+            if (isResetNotPressed) {
+                visualizePath(path.reverse(), this.table);
+            }
         },
         async [ACTIONS.VISUALIZE_DIJKSTRA](
             payload: { startCellId: number, endCellId: number },

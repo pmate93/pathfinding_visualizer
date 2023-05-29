@@ -9,9 +9,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { mapGetters, mapActions } from 'pinia';
-import TABLE from '@/store/UserStore';
-import { useTableStore } from '@/store/UserStore/TableStore';
+import { mapState, mapActions } from 'pinia';
+import { useTableStore, useUtilityStore, TABLE, UTILITY } from '@/store';
 import HeaderButton from './HeaderButton.vue';
 
 export default defineComponent({
@@ -19,11 +18,11 @@ export default defineComponent({
     name: "app-header",
 
     computed: {
-        ...mapGetters(useTableStore, {
+        ...mapState(useTableStore, {
             getStartCell: TABLE.GETTERS.GET_STARTING_CELL,
             getEndCell: TABLE.GETTERS.GET_END_CELL,
             hasWaypoint: TABLE.GETTERS.HAS_WAYPOINT,
-        })
+        }),
     },
 
     methods: {
@@ -31,8 +30,13 @@ export default defineComponent({
             visualizeDijkstra: TABLE.ACTIONS.VISUALIZE_DIJKSTRA,
             setWaypoint: TABLE.ACTIONS.SET_WAYPOINT,
         }),
+        ...mapActions(useUtilityStore, {
+            setResetValue: UTILITY.ACTIONS.SET_RESET_VALUE,
+        }),
 
         start(): void {
+            this.setResetValue(false);
+
             const startCellId = this.getStartCell()?.id;
             const endCellId = this.getEndCell()?.id;
             if (startCellId && endCellId){
