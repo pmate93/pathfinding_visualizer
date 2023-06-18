@@ -9,7 +9,7 @@ import { BorderStyle, Cell, CellState } from '@/store/TableStore/types';
 import { defineComponent, PropType } from 'vue';
 import { mapGetters } from 'pinia';
 import TABLE from '@/store/TableStore';
-import { useTableStore } from '@/store/UserStore/TableStore';
+import { useTableStore } from '@/store/TableStore';
 
 export default defineComponent({
     name: "table-cell",

@@ -6,10 +6,9 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import AppHeader from "@/components/AppHeader.vue";
-import TABLE from "@/store/UserStore";
-import { useTableStore } from '@/store/UserStore/TableStore';
 import { mapActions, mapState } from 'pinia';
-import { useUtilityStore, UTILITY } from "./store";
+import { useUtilityStore, UTILITY, TABLE } from "./store";
+import { useTableStore } from "./store/TableStore";
 
 const defaultRows = 35;
 const defaultCols = 50;

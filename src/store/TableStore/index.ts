@@ -1,8 +1,9 @@
-import { tableStore } from './TableStore';
+import { useTableStore } from './TableStore';
 import { ACTIONS, GETTERS, NAMESPACE } from './TableStore.const';
 
+export { useTableStore };
+
 export default {
-    store: tableStore,
     NAMESPACE,
     GETTERS,
     ACTIONS

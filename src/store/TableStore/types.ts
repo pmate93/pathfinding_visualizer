@@ -1,4 +1,4 @@
-import { GETTERS, MUTATIONS } from "./TableStore.const";
+import { GETTERS } from "./TableStore.const";
 
 export type TableIndexes = {
     rowIdx: number;
@@ -7,12 +7,12 @@ export type TableIndexes = {
 
 export type TableStoreInnerState = {
     table: Cell[][];
-    hasWaypoint: false;
+    hasWaypoint: boolean;
     borderStyles: BorderStyle[];
 };
 
 export type TableStoreGetters = {
-    [GETTERS.GET_TABLE]: (innerState: TableStoreInnerState) => Cell[][];
+    [GETTERS.GET_TABLE]: () => Cell[][];
     [GETTERS.GET_CELL_BY_ID]: (innerState: TableStoreInnerState) => (cellId: number) => Cell | null;
     [GETTERS.HAS_WAYPOINT]: (innerState: TableStoreInnerState) => boolean;
     [GETTERS.GET_WAYPOINT]: (innerState: TableStoreInnerState) => () => Cell | null;
@@ -24,16 +24,6 @@ export type TableStoreGetters = {
 }
 
 export type TableStoreInjectedGetter<T extends GETTERS> = ReturnType<TableStoreGetters[T]>;
-
-export type Mutations<S = TableStoreInnerState> = {
-    [MUTATIONS.SET_TABLE](state: S, payload: { rows: number; cols: number }): void;
-    [MUTATIONS.PUT_WALL](state: S, payload: TableIndexes): void;
-    [MUTATIONS.REMOVE_WALL](state: S, payload: TableIndexes): void;
-    [MUTATIONS.SET_STARTING_CELL](state: S, payload: TableIndexes): void;
-    [MUTATIONS.SET_END_CELL](state: S, payload: TableIndexes): void;
-    [MUTATIONS.SET_PATH](state: S, payload: TableIndexes): void;
-    [MUTATIONS.SET_WAYPOINT](state: S, payload: TableIndexes): void;
-}
 
 export type Cell = {
     id: number;

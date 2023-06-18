@@ -1,13 +1,12 @@
 import { mount } from '@vue/test-utils';
 import AppHeader from '@/components/AppHeader.vue';
-import { createStore } from 'vuex';
 import TABLE from '@/store/TableStore';
 
 describe('AppHeader', () => {
     let store: any;
 
     beforeEach(() => {
-        store = createStore({
+        /* store = createStore({
             modules: {
                 [TABLE.NAMESPACE]: {
                     state: {
@@ -26,7 +25,7 @@ describe('AppHeader', () => {
                     },
                 },
             },
-        });
+        }); */
     });
 
     it('renders the component', () => {

@@ -1,266 +1,201 @@
-import { ActionContext, Module, MutationTree } from "vuex";
-import { getCellById, getCellIndexesById, getFirstCellByState, getRandomBorderStyle, setCellsWithIds } from "./tableHelpers";
-import { ACTIONS, GETTERS, MUTATIONS } from "./TableStore.const";
-import { Cell, CellState, TableStoreGetters, TableStoreInnerState, TableStoreInjectedGetter, Mutations, TableIndexes, BorderStyle } from "./types";
-import { dijkstra } from "../../commonHelpers/helpers";
+import { defineStore } from 'pinia';
+import { ACTIONS, GETTERS, NAMESPACE } from './TableStore.const';
+import { Cell, CellState, TableIndexes, TableStoreInnerState } from './types';
+import { getCellById, getCellIndexesById, getFirstCellByState, getRandomBorderStyle, setCellsWithIds } from './tableHelpers';
+import { dijkstra } from '@/commonHelpers/helpers';
+import { useUtilityStore } from '../UtilityStore';
 
-const state: TableStoreInnerState = {
-    table: [],
-    hasWaypoint: false,
-    borderStyles: [],
-};
+export const useTableStore = defineStore({
+    id: NAMESPACE,
+    state: (): TableStoreInnerState => ({
+        table: [],
+        hasWaypoint: false,
+        borderStyles: [],
+    }),
+    getters: {
+        [GETTERS.GET_TABLE](): Cell[][] {
+            return this.table;
+        },
+        [GETTERS.GET_CELL_BY_ID]: (state: TableStoreInnerState) =>
+            (id: number): Cell | null => getCellById(state.table, id),
 
-const getters: TableStoreGetters = {
-    [GETTERS.GET_TABLE](innerState: TableStoreInnerState): Cell[][] {
-        return innerState.table;
+        [GETTERS.GET_STARTING_CELL]: (state: TableStoreInnerState) =>
+            (): Cell | null => getFirstCellByState(state.table, CellState.START),
+
+        [GETTERS.GET_WAYPOINT]: (state: TableStoreInnerState) =>
+            (): Cell | null => getFirstCellByState(state.table, CellState.WAYPOINT),
+
+        [GETTERS.GET_END_CELL]: (state: TableStoreInnerState) =>
+            (): Cell | null => getFirstCellByState(state.table, CellState.END),
+
+        [GETTERS.GET_CELL_BY_INDEX]: (state: TableStoreInnerState) =>
+            (rowIdx: number, colIdx: number): Cell | null => {
+                if (state.table.length > rowIdx && state.table[rowIdx].length > colIdx){
+                    return state.table[rowIdx][colIdx];
+                }
+                return null;
+            },
+
+        [GETTERS.GET_SHORTEST_PATH_WITH_DIJKSTRA]: (state: TableStoreInnerState) =>
+            (startCellId: number, endCellId: number): { path: TableIndexes[]; visitOrder: TableIndexes[]; } | null => {
+                const startCell = getCellIndexesById(state.table, startCellId);
+                const endCell = getCellIndexesById(state.table, endCellId);
+
+                if (startCell && endCell){
+                    return dijkstra(state.table, startCell, endCell);
+                }
+
+                return null;
+            },
+
+        [GETTERS.HAS_WAYPOINT]: (state: TableStoreInnerState) => state.hasWaypoint,
+        [GETTERS.GET_BORDER_STYLES]: (state: TableStoreInnerState) => state.borderStyles,
     },
-    [GETTERS.GET_CELL_BY_ID]: (innerState: TableStoreInnerState) =>
-        (cellId: number): Cell | null => getCellById(innerState.table, cellId),
-
-    [GETTERS.GET_STARTING_CELL]: (innerState: TableStoreInnerState) =>
-        (): Cell | null => getFirstCellByState(innerState.table, CellState.START),
-
-    [GETTERS.GET_WAYPOINT]: (innerState: TableStoreInnerState) =>
-        (): Cell | null => getFirstCellByState(innerState.table, CellState.WAYPOINT),
-
-    [GETTERS.GET_END_CELL]: (innerState: TableStoreInnerState) =>
-        (): Cell | null => getFirstCellByState(innerState.table, CellState.END),
-
-    [GETTERS.GET_CELL_BY_INDEX]: (innerState: TableStoreInnerState) =>
-        (rowIdx: number, colIdx: number): Cell | null => {
-            if (innerState.table.length > rowIdx && innerState.table[rowIdx].length > colIdx){
-                return innerState.table[rowIdx][colIdx];
+    actions: {
+        [ACTIONS.SET_TABLE](rows: number, cols: number): void {
+            this.table = [];
+            for (let i = 0; i < rows; i++) {
+                this.table.push(Array(cols));
             }
-            return null;
+            setCellsWithIds(this.table);
         },
-    [GETTERS.GET_SHORTEST_PATH_WITH_DIJKSTRA]: (innerState: TableStoreInnerState) =>
-        (startCellId: number, endCellId: number): { path: TableIndexes[]; visitOrder: TableIndexes[]; } | null => {
-            const startCell = getCellIndexesById(innerState.table, startCellId);
-            const endCell = getCellIndexesById(innerState.table, endCellId);
-
-            if (startCell && endCell){
-                return dijkstra(innerState.table, startCell, endCell);
-            }
-
-            return null;
+        [ACTIONS.SET_STARTING_CELL](
+            payload: TableIndexes,
+        ): void {
+            this.table[payload.rowIdx][payload.colIdx].state = CellState.START;
         },
-    [GETTERS.HAS_WAYPOINT]: (innerState: TableStoreInnerState) => innerState.hasWaypoint,
-    [GETTERS.GET_BORDER_STYLES]: (innerState: TableStoreInnerState) => innerState.borderStyles,
-};
-
-const mutations: MutationTree<TableStoreInnerState> & Mutations = {
-    [MUTATIONS.SET_TABLE](
-        innerState: TableStoreInnerState,
-        payload: { rows: number; cols: number }
-    ): void {
-        for (let i = 0; i < payload.rows; i++) {
-            innerState.table.push(Array(payload.cols));
-        }
-        setCellsWithIds(innerState.table);
-    },
-    [MUTATIONS.SET_STARTING_CELL](
-        innerState,
-        payload: TableIndexes,
-    ): void {
-        innerState.table[payload.rowIdx][payload.colIdx].state = CellState.START;
-    },
-    [MUTATIONS.SET_END_CELL](
-        innerState,
-        payload: TableIndexes,
-    ): void {
-        innerState.table[payload.rowIdx][payload.colIdx].state = CellState.END;
-    },
-    [MUTATIONS.PUT_WALL](
-        innerState,
-        payload: TableIndexes,
-    ): void {
-        innerState.table[payload.rowIdx][payload.colIdx].state = CellState.WALL;
-    },
-    [MUTATIONS.REMOVE_WALL](
-        innerState,
-        payload: TableIndexes,
-    ): void {
-        innerState.table[payload.rowIdx][payload.colIdx].state = CellState.EMPTY;
-    },
-    [MUTATIONS.SET_CELL_VISITED](
-        innerState,
-        payload: TableIndexes,
-    ): void {
-        if (innerState.table[payload.rowIdx][payload.colIdx].state !== CellState.START) {
-            innerState.table[payload.rowIdx][payload.colIdx].state = CellState.VISITED;
-        }
-    },
-    [MUTATIONS.SET_PATH](
-        innerState,
-        payload: TableIndexes,
-    ): void {
-        if (innerState.table[payload.rowIdx][payload.colIdx].state !== CellState.START) {
-            innerState.table[payload.rowIdx][payload.colIdx].state = CellState.PATH;
-        }
-    },
-    [MUTATIONS.SET_WAYPOINT](
-        innerState,
-        payload: {
-            rowIdx: number;
-            colIdx: number;
-            borderStyleId: number;
+        [ACTIONS.SET_END_CELL](
+            payload: TableIndexes,
+        ): void {
+            this.table[payload.rowIdx][payload.colIdx].state = CellState.END;
         },
-    ): void {
-        if (innerState.table[payload.rowIdx][payload.colIdx].state !== CellState.START && !innerState.hasWaypoint) {
-            innerState.table[payload.rowIdx][payload.colIdx].state = CellState.WAYPOINT;
-            innerState.table[payload.rowIdx][payload.colIdx].borderStyleId = payload.borderStyleId;
-        }
-    },
-    [MUTATIONS.ADD_BORDER_STYLE](
-        innerState,
-        payload: BorderStyle,
-    ): void {
-        innerState.borderStyles.push(payload);
-    },
-};
+        [ACTIONS.SET_WAYPOINT](
+            payload: TableIndexes,
+        ): void {
+            const borderStyles = this[GETTERS.GET_BORDER_STYLES];
 
-const actions = {
-    [ACTIONS.SET_TABLE](
-        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: { rows: number; cols: number }
-    ): void {
-        context.commit(MUTATIONS.SET_TABLE, { rows: payload.rows, cols: payload.cols });
-    },
-    [ACTIONS.SET_STARTING_CELL](
-        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: TableIndexes,
-    ): void {
-        context.commit(MUTATIONS.SET_STARTING_CELL, { rowIdx: payload.rowIdx, colIdx: payload.colIdx });
-    },
-    [ACTIONS.SET_END_CELL](
-        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: TableIndexes,
-    ): void {
-        context.commit(MUTATIONS.SET_END_CELL, { rowIdx: payload.rowIdx, colIdx: payload.colIdx });
-    },
-    [ACTIONS.SET_WAYPOINT](
-        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: TableIndexes,
-    ): void {
-        const borderStyles: TableStoreInjectedGetter<GETTERS.GET_BORDER_STYLES> = context.getters[GETTERS.GET_BORDER_STYLES];
-
-        let uniqueId = 0;
-        let randomBorderStyle = getRandomBorderStyle();
-        if (borderStyles.length) {
-            const idFromLastElement = borderStyles[borderStyles.length - 1].id;
-            uniqueId = idFromLastElement + 1;
-        }
-
-        while (borderStyles.length && borderStyles.filter(element => element.style === randomBorderStyle).length) {
-            randomBorderStyle = getRandomBorderStyle();
-        }
-
-        context.commit(MUTATIONS.ADD_BORDER_STYLE, { id: uniqueId, style: randomBorderStyle });
-        context.commit(MUTATIONS.SET_WAYPOINT, { rowIdx: payload.rowIdx, colIdx: payload.colIdx, borderStyleId: uniqueId });
-    },
-    [ACTIONS.CHANGE_WALL](
-        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: TableIndexes,
-    ): void {
-        const getCellByIndex: TableStoreInjectedGetter<GETTERS.GET_CELL_BY_INDEX> = context.getters[GETTERS.GET_CELL_BY_INDEX];
-        const selectedCell = getCellByIndex(payload.rowIdx, payload.colIdx);
-
-        if (
-            selectedCell?.state === CellState.WALL ||
-            selectedCell?.state === CellState.EMPTY
-        )
-        {
-            const tableIndexes = { rowIdx: payload.rowIdx, colIdx: payload.colIdx };
-            selectedCell?.state === CellState.WALL ?
-                context.commit(MUTATIONS.REMOVE_WALL, tableIndexes) :
-                context.commit(MUTATIONS.PUT_WALL, tableIndexes);
-        }
-    },
-    [ACTIONS.MOVE_STARTING_CELL](
-        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: TableIndexes,
-    ): void {
-        const getStartCell: TableStoreInjectedGetter<GETTERS.GET_STARTING_CELL> = context.getters[GETTERS.GET_STARTING_CELL];
-        const startCell = getStartCell();
-
-        if (startCell) {
-            startCell.state = CellState.EMPTY;
-            context.dispatch(ACTIONS.SET_STARTING_CELL, payload);
-        }
-    },
-    [ACTIONS.MOVE_WAYPOINT_CELL](
-        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: {
-            rowIdx: number;
-            colIdx: number;
-            cellId: number;
-        },
-    ): void {
-        const getWaypointCellById: TableStoreInjectedGetter<GETTERS.GET_CELL_BY_ID> = context.getters[GETTERS.GET_CELL_BY_ID];
-        const waypointCell = getWaypointCellById(payload.cellId);
-
-        if (waypointCell) {
-            waypointCell.state = CellState.EMPTY;
-            context.commit(MUTATIONS.SET_WAYPOINT, { ...payload, borderStyleId: waypointCell.borderStyleId });
-            delete waypointCell.borderStyleId;
-        }
-    },
-    [ACTIONS.MOVE_END_CELL](
-        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: TableIndexes,
-    ): void {
-        const getEndCell: TableStoreInjectedGetter<GETTERS.GET_END_CELL> = context.getters[GETTERS.GET_END_CELL];
-        const endCell = getEndCell();
-
-        if (endCell) {
-            endCell.state = CellState.EMPTY;
-            context.dispatch(ACTIONS.SET_END_CELL, payload);
-        }
-    },
-    async [ACTIONS.VISUALIZE_PATH_AND_VISIT_ORDER](
-        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: { path: TableIndexes[], visitOrder: TableIndexes[]},
-    ): Promise<void> {
-        async function visualizeVisitOrder(visitOrder: TableIndexes[]): Promise<void> {
-            if (visitOrder.length === 0) {
-                return Promise.resolve();
+            let uniqueId = 0;
+            let randomBorderStyle = getRandomBorderStyle();
+            if (borderStyles.length) {
+                const idFromLastElement = borderStyles[borderStyles.length - 1].id;
+                uniqueId = idFromLastElement + 1;
             }
 
-            const currentCell = visitOrder.pop();
-            context.commit(MUTATIONS.SET_CELL_VISITED, currentCell);
-            await new Promise((resolve) => setTimeout(resolve, 10));
+            while (borderStyles.length && borderStyles.filter(element => element.style === randomBorderStyle).length) {
+                randomBorderStyle = getRandomBorderStyle();
+            }
 
-            return visualizeVisitOrder(visitOrder);
-        }
-        function visualizePath(path: TableIndexes[]): void {
-            setTimeout(() => {
-                const currentCell = path.pop();
-                context.commit(MUTATIONS.SET_PATH, currentCell);
+            this.borderStyles.push({ id: uniqueId, style: randomBorderStyle });
 
-                if (path.length > 0) visualizePath(path);
-            }, 10);
-        }
+            // set waypoint
+            if (this.table[payload.rowIdx][payload.colIdx].state !== CellState.START && !this.hasWaypoint) {
+                this.table[payload.rowIdx][payload.colIdx].state = CellState.WAYPOINT;
+                this.table[payload.rowIdx][payload.colIdx].borderStyleId = uniqueId;
+            }
+        },
+        [ACTIONS.CHANGE_WALL](
+            payload: TableIndexes,
+        ): void {
+            const selectedCell = this.getCellByIndex(payload.rowIdx, payload.colIdx);
 
-        await visualizeVisitOrder(payload.visitOrder.reverse());
-        visualizePath(payload.path.reverse());
-    },
-    async [ACTIONS.VISUALIZE_DIJKSTRA](
-        context: ActionContext<TableStoreInnerState, TableStoreInnerState>,
-        payload: { startCellId: number, endCellId: number },
-    ): Promise<void> {
-        const getShortestPathWithDijkstra: TableStoreInjectedGetter<GETTERS.GET_SHORTEST_PATH_WITH_DIJKSTRA> = context.getters[GETTERS.GET_SHORTEST_PATH_WITH_DIJKSTRA];
-        const result = getShortestPathWithDijkstra(payload.startCellId, payload.endCellId);
+            if (
+                selectedCell?.state === CellState.WALL ||
+                selectedCell?.state === CellState.EMPTY
+            )
+            {
+                selectedCell.state === CellState.WALL ?
+                    this.table[payload.rowIdx][payload.colIdx].state = CellState.EMPTY :
+                    this.table[payload.rowIdx][payload.colIdx].state = CellState.WALL;
+            }
+        },
+        [ACTIONS.MOVE_STARTING_CELL](
+            payload: TableIndexes,
+        ): void {
+            const startCell = this.getStartingCell();
 
-        if (result) {
-            context.dispatch(ACTIONS.VISUALIZE_PATH_AND_VISIT_ORDER, result);
-        }
-    },
-};
+            if (startCell) {
+                startCell.state = CellState.EMPTY;
+                this.table[payload.rowIdx][payload.colIdx].state = CellState.START;
+            }
+        },
+        [ACTIONS.MOVE_WAYPOINT_CELL](
+            payload: {
+                rowIdx: number;
+                colIdx: number;
+                cellId: number;
+            },
+        ): void {
+            const waypointCell = this.getCellById(payload.cellId);
 
-export const tableStore: Module<TableStoreInnerState, TableStoreInnerState> = {
-    state,
-    mutations,
-    getters,
-    actions,
-    namespaced: true,
-};
+            if (waypointCell) {
+                waypointCell.state = CellState.EMPTY;
+                if (this.table[payload.rowIdx][payload.colIdx].state !== CellState.START && !this.hasWaypoint) {
+                    this.table[payload.rowIdx][payload.colIdx].state = CellState.WAYPOINT;
+                    this.table[payload.rowIdx][payload.colIdx].borderStyleId = waypointCell.borderStyleId;
+                }
+                delete waypointCell.borderStyleId;
+            }
+        },
+        [ACTIONS.MOVE_END_CELL](
+            payload: TableIndexes,
+        ): void {
+            const endCell = this.getEndCell();
+
+            if (endCell) {
+                endCell.state = CellState.EMPTY;
+                this.table[payload.rowIdx][payload.colIdx].state = CellState.END;
+            }
+        },
+        async [ACTIONS.VISUALIZE_PATH_AND_VISIT_ORDER](
+            path: TableIndexes[], visitOrder: TableIndexes[],
+        ): Promise<void> {
+            const utilityStore = useUtilityStore();
+            async function visualizeVisitOrder(visitOrder: TableIndexes[], table: Cell[][]): Promise<boolean> {
+                if (utilityStore.getIsResetPressed) {
+                    return false;
+                }
+                if (visitOrder.length === 0) {
+                    return true;
+                }
+
+                const currentCell = visitOrder.pop();
+                if (currentCell && table[currentCell.rowIdx][currentCell.colIdx].state !== CellState.START) {
+                    table[currentCell.rowIdx][currentCell.colIdx].state = CellState.VISITED;
+                }
+                await new Promise((resolve) => setTimeout(resolve, 5));
+
+                return visualizeVisitOrder(visitOrder, table);
+            }
+            function visualizePath(path: TableIndexes[], table: Cell[][]): void {
+                setTimeout(() => {
+                    if (utilityStore.getIsResetPressed) {
+                        return;
+                    }
+
+                    const currentCell = path.pop();
+                    if (currentCell && table[currentCell.rowIdx][currentCell.colIdx].state !== CellState.START) {
+                        table[currentCell.rowIdx][currentCell.colIdx].state = CellState.PATH;
+                    }
+
+                    if (path.length > 0) visualizePath(path, table);
+                }, 10);
+            }
+
+            const isResetNotPressed = await visualizeVisitOrder(visitOrder.reverse(), this.table);
+            if (isResetNotPressed) {
+                visualizePath(path.reverse(), this.table);
+            }
+        },
+        async [ACTIONS.VISUALIZE_DIJKSTRA](
+            payload: { startCellId: number, endCellId: number },
+        ): Promise<void> {
+            const result = this.getShortestPathWithDijkstra(payload.startCellId, payload.endCellId);
+
+            if (result) {
+                this.visualizePathAndVisitOrder(result.path, result.visitOrder);
+            }
+        },
+    }
+});
+
+export type TableStore = ReturnType<typeof useTableStore>;
