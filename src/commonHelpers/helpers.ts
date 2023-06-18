@@ -1,4 +1,4 @@
-import { type Cell, CellState, type TableIndexes } from "@/store/TableStore/types";
+import { type Cell, CellState, type TableIndexes } from '@/store/TableStore/types';
 
 export function filterTwoDArray<T>(arr: T[][], predicateFn: (element: T) => boolean): T[] {
     const returnArr = [];
@@ -14,7 +14,11 @@ export function filterTwoDArray<T>(arr: T[][], predicateFn: (element: T) => bool
 
 type Predecessor = { [key: string]: TableIndexes | null };
 
-export function dijkstra(grid: Cell[][], start: TableIndexes, end: TableIndexes): { path: TableIndexes[], visitOrder: TableIndexes[] } | null {
+export function dijkstra(
+    grid: Cell[][],
+    start: TableIndexes,
+    end: TableIndexes,
+): { path: TableIndexes[]; visitOrder: TableIndexes[] } | null {
     const visited: { [key: string]: boolean } = {};
     const distances: { [key: string]: number } = {};
     const predecessors: Predecessor = {};
@@ -33,8 +37,7 @@ export function dijkstra(grid: Cell[][], start: TableIndexes, end: TableIndexes)
             distances[key] = 1;
             if (grid[i][j].state === CellState.WALL) {
                 visited[key] = true;
-            }
-            else if (i === start.rowIdx && j === start.colIdx) {
+            } else if (i === start.rowIdx && j === start.colIdx) {
                 distances[key] = 0;
                 queue.unshift(cell);
             }

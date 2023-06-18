@@ -1,78 +1,80 @@
 import { defineStore } from 'pinia';
-import { ACTIONS, GETTERS, NAMESPACE } from './TableStore.const';
 import { type Cell, CellState, type TableIndexes, type TableStoreInnerState } from './types';
-import { getCellById, getCellIndexesById, getFirstCellByState, getRandomBorderStyle, setCellsWithIds } from './tableHelpers';
+import {
+    getCellById,
+    getCellIndexesById,
+    getFirstCellByState,
+    getRandomBorderStyle,
+    setCellsWithIds,
+} from './tableHelpers';
 import { dijkstra } from '@/commonHelpers/helpers';
 import { useUtilityStore } from '../UtilityStore';
 
 export const useTableStore = defineStore({
-    id: NAMESPACE,
+    id: 'table',
     state: (): TableStoreInnerState => ({
         table: [],
         hasWaypoint: false,
         borderStyles: [],
     }),
     getters: {
-        [GETTERS.GET_TABLE](): Cell[][] {
+        getTable(): Cell[][] {
             return this.table;
         },
-        [GETTERS.GET_CELL_BY_ID]: (state: TableStoreInnerState) =>
-            (id: number): Cell | null => getCellById(state.table, id),
+        getCellById:
+            (state: TableStoreInnerState) =>
+                (id: number): Cell | null =>
+                    getCellById(state.table, id),
 
-        [GETTERS.GET_STARTING_CELL]: (state: TableStoreInnerState) =>
-            (): Cell | null => getFirstCellByState(state.table, CellState.START),
+        getStartingCell: (state: TableStoreInnerState) => (): Cell | null =>
+            getFirstCellByState(state.table, CellState.START),
 
-        [GETTERS.GET_WAYPOINT]: (state: TableStoreInnerState) =>
-            (): Cell | null => getFirstCellByState(state.table, CellState.WAYPOINT),
+        getWaypoint: (state: TableStoreInnerState) => (): Cell | null =>
+            getFirstCellByState(state.table, CellState.WAYPOINT),
 
-        [GETTERS.GET_END_CELL]: (state: TableStoreInnerState) =>
-            (): Cell | null => getFirstCellByState(state.table, CellState.END),
+        getEndCell: (state: TableStoreInnerState) => (): Cell | null => getFirstCellByState(state.table, CellState.END),
 
-        [GETTERS.GET_CELL_BY_INDEX]: (state: TableStoreInnerState) =>
-            (rowIdx: number, colIdx: number): Cell | null => {
-                if (state.table.length > rowIdx && state.table[rowIdx].length > colIdx){
-                    return state.table[rowIdx][colIdx];
-                }
-                return null;
-            },
+        getCellByIndex:
+            (state: TableStoreInnerState) =>
+                (rowIdx: number, colIdx: number): Cell | null => {
+                    if (state.table.length > rowIdx && state.table[rowIdx].length > colIdx) {
+                        return state.table[rowIdx][colIdx];
+                    }
+                    return null;
+                },
 
-        [GETTERS.GET_SHORTEST_PATH_WITH_DIJKSTRA]: (state: TableStoreInnerState) =>
-            (startCellId: number, endCellId: number): { path: TableIndexes[]; visitOrder: TableIndexes[]; } | null => {
-                const startCell = getCellIndexesById(state.table, startCellId);
-                const endCell = getCellIndexesById(state.table, endCellId);
+        getShortestPathWithDijkstra:
+            (state: TableStoreInnerState) =>
+                (startCellId: number, endCellId: number): { path: TableIndexes[]; visitOrder: TableIndexes[] } | null => {
+                    const startCell = getCellIndexesById(state.table, startCellId);
+                    const endCell = getCellIndexesById(state.table, endCellId);
 
-                if (startCell && endCell){
-                    return dijkstra(state.table, startCell, endCell);
-                }
+                    if (startCell && endCell) {
+                        return dijkstra(state.table, startCell, endCell);
+                    }
 
-                return null;
-            },
+                    return null;
+                },
 
-        [GETTERS.HAS_WAYPOINT]: (state: TableStoreInnerState) => state.hasWaypoint,
-        [GETTERS.GET_BORDER_STYLES]: (state: TableStoreInnerState) => state.borderStyles,
+        getHasWaypoint: (state: TableStoreInnerState) => state.hasWaypoint,
+        getBorderStyles: (state: TableStoreInnerState) => state.borderStyles,
     },
     actions: {
-        [ACTIONS.SET_TABLE](rows: number, cols: number): void {
+        setTable(rows: number, cols: number): void {
             this.table = [];
             for (let i = 0; i < rows; i++) {
                 this.table.push(Array(cols));
             }
             setCellsWithIds(this.table);
         },
-        [ACTIONS.SET_STARTING_CELL](
-            payload: TableIndexes,
-        ): void {
+        setStartingCell(payload: TableIndexes): void {
             this.table[payload.rowIdx][payload.colIdx].state = CellState.START;
         },
-        [ACTIONS.SET_END_CELL](
-            payload: TableIndexes,
-        ): void {
+        setEndCell(payload: TableIndexes): void {
             this.table[payload.rowIdx][payload.colIdx].state = CellState.END;
         },
-        [ACTIONS.SET_WAYPOINT](
-            payload: TableIndexes,
-        ): void {
-            const borderStyles = this[GETTERS.GET_BORDER_STYLES];
+        setWaypoint(payload: TableIndexes): void {
+            const borderStyles = this.getBorderStyles;
 
             let uniqueId = 0;
             let randomBorderStyle = getRandomBorderStyle();
@@ -93,24 +95,16 @@ export const useTableStore = defineStore({
                 this.table[payload.rowIdx][payload.colIdx].borderStyleId = uniqueId;
             }
         },
-        [ACTIONS.CHANGE_WALL](
-            payload: TableIndexes,
-        ): void {
+        changeWall(payload: TableIndexes): void {
             const selectedCell = this.getCellByIndex(payload.rowIdx, payload.colIdx);
 
-            if (
-                selectedCell?.state === CellState.WALL ||
-                selectedCell?.state === CellState.EMPTY
-            )
-            {
-                selectedCell.state === CellState.WALL ?
-                    this.table[payload.rowIdx][payload.colIdx].state = CellState.EMPTY :
-                    this.table[payload.rowIdx][payload.colIdx].state = CellState.WALL;
+            if (selectedCell?.state === CellState.WALL || selectedCell?.state === CellState.EMPTY) {
+                selectedCell.state === CellState.WALL
+                    ? (this.table[payload.rowIdx][payload.colIdx].state = CellState.EMPTY)
+                    : (this.table[payload.rowIdx][payload.colIdx].state = CellState.WALL);
             }
         },
-        [ACTIONS.MOVE_STARTING_CELL](
-            payload: TableIndexes,
-        ): void {
+        moveStartingCell(payload: TableIndexes): void {
             const startCell = this.getStartingCell();
 
             if (startCell) {
@@ -118,13 +112,7 @@ export const useTableStore = defineStore({
                 this.table[payload.rowIdx][payload.colIdx].state = CellState.START;
             }
         },
-        [ACTIONS.MOVE_WAYPOINT_CELL](
-            payload: {
-                rowIdx: number;
-                colIdx: number;
-                cellId: number;
-            },
-        ): void {
+        moveWaypointCell(payload: { rowIdx: number; colIdx: number; cellId: number }): void {
             const waypointCell = this.getCellById(payload.cellId);
 
             if (waypointCell) {
@@ -136,9 +124,7 @@ export const useTableStore = defineStore({
                 delete waypointCell.borderStyleId;
             }
         },
-        [ACTIONS.MOVE_END_CELL](
-            payload: TableIndexes,
-        ): void {
+        moveEndCell(payload: TableIndexes): void {
             const endCell = this.getEndCell();
 
             if (endCell) {
@@ -146,9 +132,7 @@ export const useTableStore = defineStore({
                 this.table[payload.rowIdx][payload.colIdx].state = CellState.END;
             }
         },
-        async [ACTIONS.VISUALIZE_PATH_AND_VISIT_ORDER](
-            path: TableIndexes[], visitOrder: TableIndexes[],
-        ): Promise<void> {
+        async visualizePathAndVisitOrder(path: TableIndexes[], visitOrder: TableIndexes[]): Promise<void> {
             const utilityStore = useUtilityStore();
             async function visualizeVisitOrder(visitOrder: TableIndexes[], table: Cell[][]): Promise<boolean> {
                 if (utilityStore.getIsResetPressed) {
@@ -162,7 +146,7 @@ export const useTableStore = defineStore({
                 if (currentCell && table[currentCell.rowIdx][currentCell.colIdx].state !== CellState.START) {
                     table[currentCell.rowIdx][currentCell.colIdx].state = CellState.VISITED;
                 }
-                await new Promise((resolve) => setTimeout(resolve, 5));
+                await new Promise(resolve => setTimeout(resolve, 5));
 
                 return visualizeVisitOrder(visitOrder, table);
             }
@@ -186,16 +170,14 @@ export const useTableStore = defineStore({
                 visualizePath(path.reverse(), this.table);
             }
         },
-        async [ACTIONS.VISUALIZE_DIJKSTRA](
-            payload: { startCellId: number, endCellId: number },
-        ): Promise<void> {
+        async visualizeDijkstra(payload: { startCellId: number; endCellId: number }): Promise<void> {
             const result = this.getShortestPathWithDijkstra(payload.startCellId, payload.endCellId);
 
             if (result) {
                 this.visualizePathAndVisitOrder(result.path, result.visitOrder);
             }
         },
-    }
+    },
 });
 
 export type TableStore = ReturnType<typeof useTableStore>;

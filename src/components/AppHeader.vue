@@ -15,7 +15,7 @@ import HeaderButton from './HeaderButton.vue';
 
 export default defineComponent({
     components: { HeaderButton },
-    name: "app-header",
+    name: 'app-header',
 
     computed: {
         ...mapStores(useTableStore, useUtilityStore),
@@ -27,15 +27,14 @@ export default defineComponent({
 
             const startCellId = this.tableStore.getStartingCell()?.id;
             const endCellId = this.tableStore.getEndCell()?.id;
-            if (startCellId && endCellId){
+            if (startCellId && endCellId) {
                 this.tableStore.visualizeDijkstra({ startCellId, endCellId });
-
             }
         },
         addWaypoint(): void {
             this.tableStore.setWaypoint({ rowIdx: 25, colIdx: 25 });
         },
-    }
+    },
 });
 </script>
 
@@ -52,6 +51,6 @@ nav a {
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+    color: #42b983;
 }
 </style>

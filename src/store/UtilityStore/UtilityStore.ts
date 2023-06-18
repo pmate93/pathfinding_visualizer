@@ -1,20 +1,19 @@
 import { defineStore } from 'pinia';
-import { ACTIONS, GETTERS, NAMESPACE } from './UtilityStore.const';
 import { type UtilityStoreInnerState } from './types';
 
 export const useUtilityStore = defineStore({
-    id: NAMESPACE,
+    id: 'utility',
     state: (): UtilityStoreInnerState => ({
         isResetPressed: false,
     }),
     getters: {
-        [GETTERS.IS_RESET_PRESSED]: (state: UtilityStoreInnerState): boolean => state.isResetPressed
+        getIsResetPressed: (state: UtilityStoreInnerState): boolean => state.isResetPressed,
     },
     actions: {
-        [ACTIONS.SET_RESET_VALUE](value: boolean): void {
+        setResetValue(value: boolean): void {
             this.isResetPressed = value;
         },
-    }
+    },
 });
 
 export type UtilityStore = ReturnType<typeof useUtilityStore>;

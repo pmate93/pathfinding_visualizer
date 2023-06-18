@@ -4,11 +4,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import AppHeader from "@/components/AppHeader.vue";
+import { defineComponent } from 'vue';
+import AppHeader from '@/components/AppHeader.vue';
 import { mapStores } from 'pinia';
-import { useUtilityStore, UTILITY, TABLE } from "./store";
-import { useTableStore } from "./store/TableStore";
+import { useUtilityStore } from './store';
+import { useTableStore } from './store/TableStore';
 
 const defaultRows = 35;
 const defaultCols = 50;
@@ -29,7 +29,7 @@ export default defineComponent({
         onReset(): void {
             this.utilityStore.setResetValue(true);
             this.setInitialState();
-        }
+        },
     },
 
     created() {

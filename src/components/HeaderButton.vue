@@ -1,11 +1,10 @@
-
 <template>
     <button>
         {{ label }}
     </button>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { defineComponent } from 'vue';
 export default defineComponent({
     name: 'header-button',
@@ -13,11 +12,9 @@ export default defineComponent({
         label: {
             type: String,
             required: true,
-        }
+        },
     },
 });
 </script>
 
-<style>
-
-</style>
+<style></style>

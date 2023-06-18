@@ -11,13 +11,13 @@ import { mapStores } from 'pinia';
 import { useTableStore } from '@/store/TableStore';
 
 export default defineComponent({
-    name: "table-cell",
+    name: 'table-cell',
     components: {},
     props: {
         cell: {
             type: Object as PropType<Cell>,
             required: true,
-        }
+        },
     },
     computed: {
         ...mapStores(useTableStore),
@@ -29,13 +29,15 @@ export default defineComponent({
             return this.cell.state === CellState.WAYPOINT;
         },
         borderStyle(): string {
-            const style = (this.tableStore.getBorderStyles as BorderStyle[]).filter((element: BorderStyle) => element.id === this.cell.borderStyleId);
+            const style = (this.tableStore.getBorderStyles as BorderStyle[]).filter(
+                (element: BorderStyle) => element.id === this.cell.borderStyleId,
+            );
 
             if (style.length) {
                 return style[0].style;
             }
             return '';
-        }
+        },
     },
 });
 </script>
