@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ACTIONS, GETTERS, NAMESPACE } from './UtilityStore.const';
-import { UtilityStoreInnerState } from './types';
+import { type UtilityStoreInnerState } from './types';
 
 export const useUtilityStore = defineStore({
     id: NAMESPACE,

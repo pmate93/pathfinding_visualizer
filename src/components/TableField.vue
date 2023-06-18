@@ -17,7 +17,7 @@ import { defineComponent } from 'vue';
 import TableCell from "@/components/TableCell.vue";
 import { mapActions, mapGetters } from 'pinia';
 import TABLE from "@/store/TableStore";
-import { Cell, CellState, TableIndexes } from '@/store/TableStore/types';
+import { type Cell, CellState, type TableIndexes } from '@/store/TableStore/types';
 import { useTableStore } from '@/store/TableStore';
 
 export default defineComponent({

@@ -5,11 +5,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import TableField from "@/components/TableField.vue";
+import { defineComponent } from 'vue';
+import TableField from '@/components/TableField.vue';
 
 export default defineComponent({
-    name: "home-view",
+    name: 'home-view',
     components: {
         TableField,
     },
@@ -18,8 +18,8 @@ export default defineComponent({
 
 <style scoped>
 .table-container {
-  display: flex;
-  justify-content: center;
-  margin: 30px;
+    display: flex;
+    justify-content: center;
+    margin: 30px;
 }
 </style>

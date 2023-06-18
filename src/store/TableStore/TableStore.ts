@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ACTIONS, GETTERS, NAMESPACE } from './TableStore.const';
-import { Cell, CellState, TableIndexes, TableStoreInnerState } from './types';
+import { type Cell, CellState, type TableIndexes, type TableStoreInnerState } from './types';
 import { getCellById, getCellIndexesById, getFirstCellByState, getRandomBorderStyle, setCellsWithIds } from './tableHelpers';
 import { dijkstra } from '@/commonHelpers/helpers';
 import { useUtilityStore } from '../UtilityStore';

@@ -1,4 +1,4 @@
-import { Cell, CellState, TableIndexes } from "./types";
+import { type Cell, CellState, type TableIndexes } from './types';
 
 // TODO: rename function
 export function setCellsWithIds(table: Cell[][]): void {
@@ -51,7 +51,7 @@ export function isStartCellSelected(selectedCell: Cell): boolean {
 }
 
 function getRandomColor(): string {
-    return `#${Math.floor(Math.random()*16777215).toString(16)}`;
+    return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 }
 
 export function getRandomBorderStyle(): string {

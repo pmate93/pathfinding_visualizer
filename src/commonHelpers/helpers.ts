@@ -1,4 +1,4 @@
-import { Cell, CellState, TableIndexes } from "@/store/TableStore/types";
+import { type Cell, CellState, type TableIndexes } from "@/store/TableStore/types";
 
 export function filterTwoDArray<T>(arr: T[][], predicateFn: (element: T) => boolean): T[] {
     const returnArr = [];

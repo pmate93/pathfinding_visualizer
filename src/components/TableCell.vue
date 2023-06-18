@@ -5,8 +5,8 @@
 </template>
 
 <script lang="ts">
-import { BorderStyle, Cell, CellState } from '@/store/TableStore/types';
-import { defineComponent, PropType } from 'vue';
+import { type BorderStyle, type Cell, CellState } from '@/store/TableStore/types';
+import { defineComponent, type PropType } from 'vue';
 import { mapGetters } from 'pinia';
 import TABLE from '@/store/TableStore';
 import { useTableStore } from '@/store/TableStore';
