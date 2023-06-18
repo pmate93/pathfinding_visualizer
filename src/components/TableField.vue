@@ -1,6 +1,6 @@
 <template>
     <table @click="setButtonPressed">
-        <tr v-for="(row, rowIdx) in getTable" :key="rowIdx">
+        <tr v-for="(row, rowIdx) in tableStore.getTable" :key="rowIdx">
             <table-cell
                 v-for="(cell, colIdx) in row"
                 :key="colIdx"
@@ -15,8 +15,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import TableCell from "@/components/TableCell.vue";
-import { mapActions, mapGetters } from 'pinia';
-import TABLE from "@/store/TableStore";
+import { mapStores } from 'pinia';
 import { type Cell, CellState, type TableIndexes } from '@/store/TableStore/types';
 import { useTableStore } from '@/store/TableStore';
 
@@ -25,10 +24,7 @@ export default defineComponent({
     components: { TableCell },
 
     computed: {
-        ...mapGetters(useTableStore, {
-            getTable: TABLE.GETTERS.GET_TABLE,
-            getCellByIndex: TABLE.GETTERS.GET_CELL_BY_INDEX,
-        })
+        ...mapStores(useTableStore),
     },
 
     data() {
@@ -43,15 +39,8 @@ export default defineComponent({
     },
 
     methods: {
-        ...mapActions(useTableStore, {
-            changeWall: TABLE.ACTIONS.CHANGE_WALL,
-            moveStartCell: TABLE.ACTIONS.MOVE_STARTING_CELL,
-            moveWaypointCell: TABLE.ACTIONS.MOVE_WAYPOINT_CELL,
-            moveEndCell: TABLE.ACTIONS.MOVE_END_CELL,
-        }),
-
         handleCellClick(cellId: number, newIndexes: TableIndexes, mouseOver?: boolean): void {
-            const newCell = this.getCellByIndex(newIndexes.rowIdx, newIndexes.colIdx);
+            const newCell = this.tableStore.getCellByIndex(newIndexes.rowIdx, newIndexes.colIdx);
 
             if (mouseOver) {
                 this.selectedCellId = cellId;
@@ -69,26 +58,26 @@ export default defineComponent({
 
             if (this.isStartCellDragged){
                 if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell!)) {
-                    this.moveStartCell(newIndexes);
+                    this.tableStore.moveStartingCell(newIndexes);
                 }
                 this.lastIndexes = newIndexes;
             }
             else if (this.isWaypointDragged){
                 if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell!)) {
-                    this.moveWaypointCell({ ...newIndexes, cellId: this.selectedCellId });
+                    this.tableStore.moveWaypointCell({ ...newIndexes, cellId: this.selectedCellId });
                     this.selectedCellId = cellId;
                 }
                 this.lastIndexes = newIndexes;
             }
             else if (this.isEndCellDragged){
                 if (!this.isSameCellHovered(newIndexes) && this.isEmptyCell(newCell!)) {
-                    this.moveEndCell(newIndexes);
+                    this.tableStore.moveEndCell(newIndexes);
                 }
                 this.lastIndexes = newIndexes;
             }
             else if (this.isMouseButtonPressed){
                 if (!this.isSameCellHovered(newIndexes)) {
-                    this.changeWall(newIndexes);
+                    this.tableStore.changeWall(newIndexes);
                 }
                 this.lastIndexes = newIndexes;
             }

@@ -1,4 +1,4 @@
-export const NAMESPACE = 'tableStore';
+export const NAMESPACE = 'table';
 
 export enum GETTERS {
     GET_TABLE = 'getTable',

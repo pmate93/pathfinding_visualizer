@@ -1,4 +1,4 @@
-export const NAMESPACE = 'utilityStore';
+export const NAMESPACE = 'utility';
 
 export enum GETTERS {
     IS_RESET_PRESSED = 'getIsResetPressed',

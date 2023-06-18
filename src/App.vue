@@ -6,7 +6,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import AppHeader from "@/components/AppHeader.vue";
-import { mapActions, mapState } from 'pinia';
+import { mapStores } from 'pinia';
 import { useUtilityStore, UTILITY, TABLE } from "./store";
 import { useTableStore } from "./store/TableStore";
 
@@ -18,27 +18,16 @@ export default defineComponent({
     components: { AppHeader },
 
     computed: {
-        ...mapState(useTableStore, {
-            getTable: TABLE.GETTERS.GET_TABLE,
-        }),
+        ...mapStores(useTableStore, useUtilityStore),
     },
     methods: {
-        ...mapActions(useTableStore, {
-            setTable: TABLE.ACTIONS.SET_TABLE,
-            setStartingCell: TABLE.ACTIONS.SET_STARTING_CELL,
-            setEndCell: TABLE.ACTIONS.SET_END_CELL,
-        }),
-        ...mapActions(useUtilityStore, {
-            setResetValue: UTILITY.ACTIONS.SET_RESET_VALUE,
-        }),
-
         setInitialState(): void {
-            this.setTable(defaultRows, defaultCols);
-            this.setStartingCell({ rowIdx: 20, colIdx: 20 });
-            this.setEndCell({ rowIdx: 30, colIdx: 30 });
+            this.tableStore.setTable(defaultRows, defaultCols);
+            this.tableStore.setStartingCell({ rowIdx: 20, colIdx: 20 });
+            this.tableStore.setEndCell({ rowIdx: 30, colIdx: 30 });
         },
         onReset(): void {
-            this.setResetValue(true);
+            this.utilityStore.setResetValue(true);
             this.setInitialState();
         }
     },

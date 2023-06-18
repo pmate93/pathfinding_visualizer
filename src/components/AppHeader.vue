@@ -9,8 +9,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import { mapState, mapActions } from 'pinia';
-import { useTableStore, useUtilityStore, TABLE, UTILITY } from '@/store';
+import { mapStores } from 'pinia';
+import { useTableStore, useUtilityStore } from '@/store';
 import HeaderButton from './HeaderButton.vue';
 
 export default defineComponent({
@@ -18,34 +18,22 @@ export default defineComponent({
     name: "app-header",
 
     computed: {
-        ...mapState(useTableStore, {
-            getStartCell: TABLE.GETTERS.GET_STARTING_CELL,
-            getEndCell: TABLE.GETTERS.GET_END_CELL,
-            hasWaypoint: TABLE.GETTERS.HAS_WAYPOINT,
-        }),
+        ...mapStores(useTableStore, useUtilityStore),
     },
 
     methods: {
-        ...mapActions(useTableStore, {
-            visualizeDijkstra: TABLE.ACTIONS.VISUALIZE_DIJKSTRA,
-            setWaypoint: TABLE.ACTIONS.SET_WAYPOINT,
-        }),
-        ...mapActions(useUtilityStore, {
-            setResetValue: UTILITY.ACTIONS.SET_RESET_VALUE,
-        }),
-
         start(): void {
-            this.setResetValue(false);
+            this.utilityStore.setResetValue(false);
 
-            const startCellId = this.getStartCell()?.id;
-            const endCellId = this.getEndCell()?.id;
+            const startCellId = this.tableStore.getStartingCell()?.id;
+            const endCellId = this.tableStore.getEndCell()?.id;
             if (startCellId && endCellId){
-                this.visualizeDijkstra({ startCellId, endCellId });
+                this.tableStore.visualizeDijkstra({ startCellId, endCellId });
 
             }
         },
         addWaypoint(): void {
-            this.setWaypoint({ rowIdx: 25, colIdx: 25 });
+            this.tableStore.setWaypoint({ rowIdx: 25, colIdx: 25 });
         },
     }
 });
