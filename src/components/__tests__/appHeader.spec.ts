@@ -4,9 +4,7 @@ import AppHeader from '../AppHeader.vue';
 import HeaderButton from '../HeaderButton.vue';
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
-import { useTableStore, useUtilityStore } from '@/store';
-import type { TableStore } from '@/store/TableStore/TableStore';
-import type { UtilityStore } from '@/store/UtilityStore/UtilityStore';
+import { type UtilityStore, type TableStore, useTableStore, useUtilityStore } from '@/store';
 
 describe('AppHeader', () => {
     let tableStore: TableStore;

@@ -1,2 +1,2 @@
-import { useUtilityStore } from './UtilityStore';
-export { useUtilityStore };
+import { type UtilityStore, useUtilityStore } from './UtilityStore';
+export { type UtilityStore, useUtilityStore };

@@ -1,2 +1,2 @@
-import { useTableStore } from './TableStore';
-export { useTableStore };
+import { type TableStore, useTableStore } from './TableStore';
+export { type TableStore, useTableStore };
