@@ -79,8 +79,8 @@ export default defineComponent({
 
 td {
     border: 1px solid black;
-    min-width: 25px;
-    height: 25px;
+    min-width: 26px;
+    height: 26px;
     padding: 0px;
     margin: 0px;
     transition: background-color 0.5s, width 0.5s;
