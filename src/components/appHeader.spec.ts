@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi, beforeAll } from 'vitest';
 import { mount } from '@vue/test-utils';
-import AppHeader from '../AppHeader.vue';
-import HeaderButton from '../HeaderButton.vue';
+import AppHeader from './AppHeader.vue';
+import HeaderButton from './HeaderButton.vue';
 import { createTestingPinia } from '@pinia/testing';
 import { setActivePinia } from 'pinia';
 import { type UtilityStore, type TableStore, useTableStore, useUtilityStore } from '@/store';
